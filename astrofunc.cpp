@@ -32,8 +32,8 @@ using namespace astro;
  */
 
 void astro::deg_to_hms(const double degrees, HMS& hmsout) {
-    double norm_degs = normalize_degrees(degrees);
-    int total_seconds = floor((norm_degs / 360) * 86400);
+    const double norm_degs = normalize_degrees(degrees);
+    const int total_seconds = floor((norm_degs / 360) * 86400);
 
     hmsout.hours = total_seconds / 3600;
     hmsout.minutes = (total_seconds - hmsout.hours * 3600) / 60;
@@ -55,8 +55,8 @@ void astro::deg_to_hms(const double degrees, HMS& hmsout) {
  */
 
 void astro::deg_to_dms(const double degrees, DMS& dmsout) {
-    int total_seconds = degrees > 0 ? floor(degrees * 3600) :
-                                      ceil(degrees * 3600);
+    const int total_seconds = degrees > 0 ? floor(degrees * 3600) :
+                                            ceil(degrees * 3600);
 
     dmsout.degrees = total_seconds / 3600;
     dmsout.minutes = (total_seconds - dmsout.degrees * 3600) / 60;
@@ -86,7 +86,7 @@ double astro::hypot(const double opp, const double adj) {
  */
 
 void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
-    double norm_degs = normalize_degrees(rasc);
+    const double norm_degs = normalize_degrees(rasc);
     DMS dms;
     deg_to_dms(norm_degs, dms);
 
@@ -127,8 +127,8 @@ double astro::julian_date(tm * utc_time) {
         //  seconds between the current UNIX timestamp, and the
         //  UNIX timestamp at J2000.
 
-        time_t unix_epoch_j2000 = 946728000;
-        time_t utc_t = time(0);
+        const time_t unix_epoch_j2000 = 946728000;
+        const time_t utc_t = time(0);
         seconds_since_j2000 = difftime(utc_t, unix_epoch_j2000);
 
     } else {
@@ -148,7 +148,7 @@ double astro::julian_date(tm * utc_time) {
         j2000_epoch_tm.tm_mon = 0;
         j2000_epoch_tm.tm_year = 100;
         j2000_epoch_tm.tm_isdst = 0;
-        time_t j2000_epoch = mktime(&j2000_epoch_tm);
+        const time_t j2000_epoch = mktime(&j2000_epoch_tm);
 
         //  Then get the UNIX timestamp for the specified time, again
         //  as if the current system were on GMT. This time we really
@@ -162,7 +162,7 @@ double astro::julian_date(tm * utc_time) {
 
         tm calc_time = *utc_time;
         calc_time.tm_isdst = 0;
-        time_t utc_t = mktime(&calc_time);
+        const time_t utc_t = mktime(&calc_time);
 
         //  Then calculate the difference between the two times.
 
@@ -170,7 +170,6 @@ double astro::julian_date(tm * utc_time) {
 
     }
         
-
     return EPOCH_J2000 + seconds_since_j2000 / 86400;
 }
 
@@ -199,7 +198,7 @@ tm astro::get_utc_tm(tm * utc_time) {
  */
 
 double astro::kepler(const double m_anom, const double ecc) {
-    double desired_accuracy = 1e-6;
+    const double desired_accuracy = 1e-6;
     double e_anom = m_anom;
     double diff;
 
@@ -221,8 +220,7 @@ double astro::kepler(const double m_anom, const double ecc) {
 
 void astro::rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
     scd.right_ascension = degrees(atan2(rcd.y, rcd.x));
-    scd.declination = degrees(atan(rcd.z / sqrt(pow(rcd.x, 2) +
-                                                pow(rcd.y, 2))));
+    scd.declination = degrees(atan(rcd.z / hypot(rcd.x, rcd.y)));
     scd.distance = sqrt(pow(rcd.x, 2) + pow(rcd.y, 2) + pow(rcd.z, 2));
 }
 
