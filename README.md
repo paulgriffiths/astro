@@ -17,8 +17,8 @@ given UTC date:
     * Zodiac coordinates of the form 15GE23.
 * Solving Kepler's equation;
 * Converting degrees to hour/minute/second and degree/minute/second formats;
-* Find the Julian date for any given UTC date; 
-* Convert rectangular to spherical coordinates
+* Finding the Julian date for any given UTC date; and
+* Converting rectangular to spherical coordinates.
 
 Who maintains it?
 -----------------
