@@ -29,12 +29,8 @@ int main(void) {
               << utc_time.tm_min << ":"
               << utc_time.tm_sec << " according to get_utc_tm()."
               << std::endl;
-    std::cout << "Or, from Planet::calc_time(), it's: "
-              << myplanet.calc_time()
-              << std::endl;
 
     astro::show_planet_positions(std::cout);
 
     return 0;
 }
-
