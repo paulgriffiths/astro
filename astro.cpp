@@ -1,11 +1,27 @@
-// astro.cpp
-// Copyright 2013 Paul Griffiths
+/*
+ *  astro.cpp
+ *  =========
+ *  Copyright 2013 Paul Griffiths
+ *  Email: mail@paulgriffiths.net
+ *
+ *  Implementation of astronomical classes.
+ *
+ *  Distributed under the terms of the GNU General Public License.
+ *  http://www.gnu.org/licenses/
+ */
 
+
+#include <string>
 #include "astro.h"
 #include "astrofunc.h"
 
+using namespace astro;
 
-static const OrbElem ELEMENTS_J2000[] = {
+namespace {
+
+//  Orbital elements for each planet at J2000
+
+const OrbElem ELEMENTS_J2000[] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0.387009927, 0.20563593, 7.00497902,
      252.25032350, 77.45779628, 48.33076593, 0, 0},
@@ -27,7 +43,9 @@ static const OrbElem ELEMENTS_J2000[] = {
      238.92903833, 224.06891629, 110.30393684, 0, 0}
 };
 
-static const OrbElem ELEMENTS_CENT[] = {
+//  Change in orbital elements for each planet, per century
+
+const OrbElem ELEMENTS_CENT[] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
     {0.00000037, 0.00001906, -0.00594749,
      149472.67411175, 0.16047689, -0.12534081, 0, 0},
@@ -49,19 +67,34 @@ static const OrbElem ELEMENTS_CENT[] = {
     145.20780515, -0.04062942, -0.01183482, 0, 0}
 };
 
-Planet::Planet(planets pnum, time_t ct) : number(pnum), calc_time(ct) {
-    ;
+}           //  namespace
+
+
+/*
+ *  Returns orbital elements for the specified time.
+ */
+
+OrbElem Planet::calc_orbital_elements(tm * calc_time) const {
+    double jdc = (julian_date(calc_time) - EPOCH_J2000) / 36525;
+
+    OrbElem oes;
+    oes.sma = ELEMENTS_J2000[m_number].sma + ELEMENTS_CENT[m_number].sma * jdc;
+    oes.ecc = ELEMENTS_J2000[m_number].ecc + ELEMENTS_CENT[m_number].ecc * jdc;
+    oes.inc = ELEMENTS_J2000[m_number].inc + ELEMENTS_CENT[m_number].inc * jdc;
+    oes.ml = ELEMENTS_J2000[m_number].ml + ELEMENTS_CENT[m_number].ml * jdc;
+    oes.lp = ELEMENTS_J2000[m_number].lp + ELEMENTS_CENT[m_number].lp * jdc;
+    oes.lan = ELEMENTS_J2000[m_number].lan + ELEMENTS_CENT[m_number].lan * jdc;
+    oes.man = oes.ml - oes.lp;
+    oes.arp = oes.lp - oes.lan;
+
+    return oes;
 }
 
-Planet::~Planet() {
-    ;
-}
 
-Mars::Mars() : Planet(mars, 0) {
-    ;
-}
+/*
+ *  Returns the planet's name.
+ */
 
-Mars::~Mars() {
-    ;
+std::string Mars::name() const {
+    return "Mars";
 }
-

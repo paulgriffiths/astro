@@ -1,11 +1,23 @@
-// astro.h
-// Copyright 2013 Paul Griffiths
+/*
+ *  astro.h
+ *  =======
+ *  Copyright 2013 Paul Griffiths
+ *  Email: mail@paulgriffiths.net
+ *
+ *  Interface to planet classes.
+ *
+ *  Distributed under the terms of the GNU General Public License.
+ *  http://www.gnu.org/licenses/
+ */
+
 
 #ifndef PG_ASTRO_H
 #define PG_ASTRO_H
 
 #include <string>
 #include <ctime>
+
+namespace astro {
 
 struct OrbElem {
     double sma;     // Semi-major axis
@@ -22,23 +34,32 @@ enum planets {sun, mercury, venus, earth, mars,
               jupiter, saturn, uranus, neptune, pluto};
 
 class Planet {
-private:
-    const planets number;
-    time_t calc_time;
-    OrbElem oes;
+    public:
+        explicit Planet(const planets pnum, tm * ct) :
+            m_number(pnum),
+            m_calc_time(),
+            m_oes(calc_orbital_elements(ct)) {}
+        virtual ~Planet() {}
+        virtual std::string name() const = 0;
 
-    void calc_orbital_elements(const double calc_time, OrbElem& oes);
+    private:
+        const planets m_number;
+        const tm m_calc_time;
+        const OrbElem m_oes;
 
-public:
-    Planet(planets pnum, time_t ct);
-    virtual ~Planet();
-    std::string name(void) const;
+        OrbElem calc_orbital_elements(tm * calc_time) const;
+
 };
 
 class Mars: public Planet {
-public:
-    Mars();
-    ~Mars();
+    public:
+        explicit Mars(tm * ct) :
+            Planet(mars, ct) {};
+        ~Mars() {};
+
+        virtual std::string name() const;
 };
+
+}           //  namespace astro
 
 #endif          // PG_ASTRO_H
