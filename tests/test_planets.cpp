@@ -315,3 +315,39 @@ TEST(PlanetsGroup, PlutoTest) {
     test_result = normalize_degrees(cds.distance);
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
+
+
+/*
+ *  Tests position of Pluto for June 4, 2013, 01:15 UTC.
+ */
+
+TEST(PlanetsGroup, SunTest) {
+    SphCoords cds;
+    double expected_result, test_result;
+    double ra_accuracy = 0.01;
+    double de_accuracy = 0.01;
+    double di_accuracy = 0.0001;
+
+    tm test_time;
+    test_time.tm_sec = 0;
+    test_time.tm_min = 15;
+    test_time.tm_hour = 1;
+    test_time.tm_mday = 4;
+    test_time.tm_mon = 5;
+    test_time.tm_year = 113;
+
+    Sun sun(&test_time);
+    rec_to_sph(sun.geo_equ_coords(), cds);
+
+    expected_result = 72.0135416666667;
+    test_result = normalize_degrees(cds.right_ascension);
+    DOUBLES_EQUAL(expected_result, test_result, ra_accuracy);
+
+    expected_result = 22.4078888888889;
+    test_result = cds.declination;
+    DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
+
+    expected_result = 1.01447036664534;
+    test_result = normalize_degrees(cds.distance);
+    DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
+}
