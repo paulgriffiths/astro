@@ -117,7 +117,7 @@ OrbElem Planet::calc_orbital_elements(tm * calc_time) const {
 RectCoords Planet::helio_orb_coords() const {
     RectCoords hoc;
 
-    double e_anom = kepler(m_oes.man, m_oes.ecc);
+    const double e_anom = kepler(m_oes.man, m_oes.ecc);
 
     hoc.x = m_oes.sma * (cos(e_anom) - m_oes.ecc);
     hoc.y = m_oes.sma * sqrt(1 - pow(m_oes.ecc, 2)) * sin(e_anom);
@@ -132,7 +132,7 @@ RectCoords Planet::helio_orb_coords() const {
  */
 
 RectCoords Planet::helio_ecl_coords() const {
-    RectCoords hoc = helio_orb_coords();
+    const RectCoords hoc = helio_orb_coords();
     RectCoords hec;
 
     hec.x = (((cos(m_oes.arp) * cos(m_oes.lan) -
@@ -155,9 +155,9 @@ RectCoords Planet::helio_ecl_coords() const {
  */
 
 RectCoords Planet::geo_ecl_coords() const {
-    RectCoords hec = helio_ecl_coords();
+    const RectCoords hec = helio_ecl_coords();
     tm temp_tm = m_calc_time;
-    RectCoords eec = Earth(&temp_tm).helio_ecl_coords();
+    const RectCoords eec = Earth(&temp_tm).helio_ecl_coords();
 
     RectCoords gec;
 
@@ -175,7 +175,7 @@ RectCoords Planet::geo_ecl_coords() const {
 
 RectCoords Planet::geo_equ_coords() const {
     static const double obliquity = radians(23.43928);
-    RectCoords hec = geo_ecl_coords();
+    const RectCoords hec = geo_ecl_coords();
     RectCoords gec;
 
     gec.x = hec.x;
@@ -191,7 +191,7 @@ RectCoords Planet::geo_equ_coords() const {
  */
 
 double Planet::right_ascension() const {
-    RectCoords gqc = geo_equ_coords();
+    const RectCoords gqc = geo_equ_coords();
     SphCoords sph;
     rec_to_sph(gqc, sph);
 
@@ -204,7 +204,7 @@ double Planet::right_ascension() const {
  */
 
 double Planet::declination() const {
-    RectCoords gqc = geo_equ_coords();
+    const RectCoords gqc = geo_equ_coords();
     SphCoords sph;
     rec_to_sph(gqc, sph);
 
@@ -217,7 +217,7 @@ double Planet::declination() const {
  */
 
 double Planet::distance() const {
-    RectCoords gqc = geo_equ_coords();
+    const RectCoords gqc = geo_equ_coords();
     SphCoords sph;
     rec_to_sph(gqc, sph);
 
@@ -234,22 +234,22 @@ double Planet::distance() const {
  */
 
 RectCoords Sun::helio_orb_coords() const {
-    RectCoords hoc = {0, 0, 0};
+    const RectCoords hoc = {0, 0, 0};
     return hoc;
 }
 
 RectCoords Sun::helio_ecl_coords() const {
-    RectCoords hec = {0, 0, 0};
+    const RectCoords hec = {0, 0, 0};
     return hec;
 }
 
 RectCoords Earth::geo_ecl_coords() const {
-    RectCoords gec = {0, 0, 0};
+    const RectCoords gec = {0, 0, 0};
     return gec;
 }
 
 RectCoords Earth::geo_equ_coords() const {
-    RectCoords gqc = {0, 0, 0};
+    const RectCoords gqc = {0, 0, 0};
     return gqc;
 }
 
