@@ -36,9 +36,9 @@ TEST_GROUP(PlanetsGroup) {
 TEST(PlanetsGroup, MercuryTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.1;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.0001;
+    const double ra_accuracy = 0.1;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.0001;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -72,9 +72,9 @@ TEST(PlanetsGroup, MercuryTest) {
 TEST(PlanetsGroup, VenusTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.001;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.001;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -108,9 +108,9 @@ TEST(PlanetsGroup, VenusTest) {
 TEST(PlanetsGroup, MarsTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.0001;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.0001;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -144,9 +144,9 @@ TEST(PlanetsGroup, MarsTest) {
 TEST(PlanetsGroup, JupiterTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.01;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.01;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -180,9 +180,9 @@ TEST(PlanetsGroup, JupiterTest) {
 TEST(PlanetsGroup, SaturnTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.02;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.01;
+    const double ra_accuracy = 0.02;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.01;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -216,9 +216,9 @@ TEST(PlanetsGroup, SaturnTest) {
 TEST(PlanetsGroup, UranusTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.02;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.01;
+    const double ra_accuracy = 0.02;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.01;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -252,9 +252,9 @@ TEST(PlanetsGroup, UranusTest) {
 TEST(PlanetsGroup, NeptuneTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.01;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.01;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -288,9 +288,9 @@ TEST(PlanetsGroup, NeptuneTest) {
 TEST(PlanetsGroup, PlutoTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.01;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.01;
 
     tm test_time;
     test_time.tm_sec = 0;
@@ -324,9 +324,9 @@ TEST(PlanetsGroup, PlutoTest) {
 TEST(PlanetsGroup, SunTest) {
     SphCoords cds;
     double expected_result, test_result;
-    double ra_accuracy = 0.01;
-    double de_accuracy = 0.01;
-    double di_accuracy = 0.0001;
+    const double ra_accuracy = 0.01;
+    const double de_accuracy = 0.01;
+    const double di_accuracy = 0.0001;
 
     tm test_time;
     test_time.tm_sec = 0;
