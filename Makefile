@@ -34,6 +34,10 @@ OBJS=astro.o astrofunc.o
 
 TESTOBJS=tests/test_julian_date.o
 TESTOBJS+=tests/test_kepler.o
+TESTOBJS+=tests/test_normalize_degrees.o
+TESTOBJS+=tests/test_rasc_to_zodiac.o
+TESTOBJS+=tests/test_zodiac_sign.o
+TESTOBJS+=tests/test_zodiac_sign_short.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -125,6 +129,22 @@ tests/test_julian_date.o: tests/test_julian_date.cpp \
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 tests/test_kepler.o: tests/test_kepler.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_normalize_degrees.o: tests/test_normalize_degrees.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_rasc_to_zodiac.o: tests/test_rasc_to_zodiac.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_zodiac_sign.o: tests/test_zodiac_sign.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_zodiac_sign_short.o: tests/test_zodiac_sign_short.cpp \
 	astrofunc.cpp astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
