@@ -71,6 +71,15 @@ void astro::deg_to_dms(const double degrees, DMS& dmsout) {
 
 
 /*
+ *  Calculates the length of the hypotenuse using Pythagoras.
+ */
+
+double astro::hypot(const double opp, const double adj) {
+    return sqrt(pow(opp, 2) + pow(adj, 2));
+}
+
+
+/*
  *  Calculates information pertaining to the zodiacal position
  *  of the supplied right ascension, and stores the result in
  *  (and modifies) the supplied ZodiacInfo struct.
@@ -163,6 +172,18 @@ double astro::julian_date(tm * utc_time) {
         
 
     return EPOCH_J2000 + seconds_since_j2000 / 86400;
+}
+
+
+tm astro::get_utc_tm(tm * utc_time) {
+    if ( utc_time ) {
+        (*utc_time).tm_isdst = 0;
+        return *utc_time;
+    }
+
+    time_t cal_time = time(0);
+    tm * ut_tm = gmtime(&cal_time);
+    return *ut_tm;
 }
 
 
@@ -283,8 +304,8 @@ std::string astro::decl_string(const double decl) {
     oStream << std::setfill('0');
     oStream << (decl >= 0 ? "+" : "")
             << std::setw(2) << dms.degrees << "d "
-            << std::setw(2) << dms.minutes << "m "
-            << std::setw(2) << dms.seconds << "s";
+            << std::setw(2) << fabs(dms.minutes) << "m "
+            << std::setw(2) << fabs(dms.seconds) << "s";
     
     return oStream.str();
 }

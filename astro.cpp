@@ -11,9 +11,17 @@
  */
 
 
+#include <iostream>
+#include <iomanip>
 #include <string>
+#include <ctime>
+#include <cmath>
 #include "astro.h"
 #include "astrofunc.h"
+
+using std::cos;
+using std::sin;
+using std::sqrt;
 
 using namespace astro;
 
@@ -70,6 +78,13 @@ const OrbElem ELEMENTS_CENT[] = {
 }           //  namespace
 
 
+std::string Planet::calc_time() const {
+    char tstring[1000];
+    strftime(tstring, 1000, "%B %d, %Y %H:%M:%S UTC", &m_calc_time);
+    return tstring;
+}
+
+
 /*
  *  Returns orbital elements for the specified time.
  */
@@ -80,14 +95,153 @@ OrbElem Planet::calc_orbital_elements(tm * calc_time) const {
     OrbElem oes;
     oes.sma = ELEMENTS_J2000[m_number].sma + ELEMENTS_CENT[m_number].sma * jdc;
     oes.ecc = ELEMENTS_J2000[m_number].ecc + ELEMENTS_CENT[m_number].ecc * jdc;
-    oes.inc = ELEMENTS_J2000[m_number].inc + ELEMENTS_CENT[m_number].inc * jdc;
-    oes.ml = ELEMENTS_J2000[m_number].ml + ELEMENTS_CENT[m_number].ml * jdc;
-    oes.lp = ELEMENTS_J2000[m_number].lp + ELEMENTS_CENT[m_number].lp * jdc;
-    oes.lan = ELEMENTS_J2000[m_number].lan + ELEMENTS_CENT[m_number].lan * jdc;
+    oes.inc = radians(ELEMENTS_J2000[m_number].inc +
+                      ELEMENTS_CENT[m_number].inc * jdc);
+    oes.ml = radians(ELEMENTS_J2000[m_number].ml +
+                     ELEMENTS_CENT[m_number].ml * jdc);
+    oes.lp = radians(ELEMENTS_J2000[m_number].lp +
+                     ELEMENTS_CENT[m_number].lp * jdc);
+    oes.lan = radians(ELEMENTS_J2000[m_number].lan +
+                      ELEMENTS_CENT[m_number].lan * jdc);
     oes.man = oes.ml - oes.lp;
     oes.arp = oes.lp - oes.lan;
 
     return oes;
+}
+
+
+/*
+ *  Calculates the planet's heliocentric orbital coordinates.
+ */
+
+RectCoords Planet::helio_orb_coords() const {
+    RectCoords hoc;
+
+    double e_anom = kepler(m_oes.man, m_oes.ecc);
+
+    hoc.x = m_oes.sma * (cos(e_anom) - m_oes.ecc);
+    hoc.y = m_oes.sma * sqrt(1 - pow(m_oes.ecc, 2)) * sin(e_anom);
+    hoc.z = hypot(hoc.x, hoc.y);
+
+    return hoc;
+}
+
+
+/*
+ *  Calculates the planet's heliocentric ecliptic coordinates.
+ */
+
+RectCoords Planet::helio_ecl_coords() const {
+    RectCoords hoc = helio_orb_coords();
+    RectCoords hec;
+
+    hec.x = (((cos(m_oes.arp) * cos(m_oes.lan) -
+               sin(m_oes.arp) * sin(m_oes.lan) * cos(m_oes.inc)) * hoc.x) +
+             ((-sin(m_oes.arp) * cos(m_oes.lan) -
+                cos(m_oes.arp) * sin(m_oes.lan) * cos(m_oes.inc)) * hoc.y));
+    hec.y = (((cos(m_oes.arp) * sin(m_oes.lan) +
+               sin(m_oes.arp) * cos(m_oes.lan) * cos(m_oes.inc)) * hoc.x) +
+             ((-sin(m_oes.arp) * sin(m_oes.lan) +
+                cos(m_oes.arp) * cos(m_oes.lan) * cos(m_oes.inc)) * hoc.y));
+    hec.z = ((sin(m_oes.arp) * sin(m_oes.inc) * hoc.x) +
+             (cos(m_oes.arp) * sin(m_oes.inc) * hoc.y));
+            
+    return hec;
+}
+
+
+/*
+ *  Calculates the planet's geocentric ecliptic coordinates.
+ */
+
+RectCoords Planet::geo_ecl_coords() const {
+    RectCoords hec = helio_ecl_coords();
+    tm temp_tm = m_calc_time;
+    RectCoords eec = Earth(&temp_tm).helio_ecl_coords();
+
+    RectCoords gec;
+
+    gec.x = hec.x - eec.x;
+    gec.y = hec.y - eec.y;
+    gec.z = hec.z - eec.z;
+
+    return gec;
+}
+
+
+/*
+ *  Calculates the planet's geocentric equatorial coordinates.
+ */
+
+RectCoords Planet::geo_equ_coords() const {
+    static const double obliquity = radians(23.43928);
+    RectCoords hec = geo_ecl_coords();
+    RectCoords gec;
+
+    gec.x = hec.x;
+    gec.y = hec.y * cos(obliquity) - hec.z * sin(obliquity);
+    gec.z = hec.y * sin(obliquity) + hec.z * cos(obliquity);
+
+    return gec;
+}
+
+
+/*
+ *  Calculates the planet's right ascension.
+ */
+
+double Planet::right_ascension() const {
+    RectCoords gqc = geo_equ_coords();
+    SphCoords sph;
+    rec_to_sph(gqc, sph);
+
+    return sph.right_ascension;
+}
+
+
+/*
+ *  Calculates the planet's declination
+ */
+
+double Planet::declination() const {
+    RectCoords gqc = geo_equ_coords();
+    SphCoords sph;
+    rec_to_sph(gqc, sph);
+
+    return sph.declination;
+}
+
+
+/*
+ *  Calculates the planet's distance
+ */
+
+double Planet::distance() const {
+    RectCoords gqc = geo_equ_coords();
+    SphCoords sph;
+    rec_to_sph(gqc, sph);
+
+    return sph.distance;
+}
+
+
+/*
+ *  Overridden coordinate functions.
+ */
+
+RectCoords Sun::helio_ecl_coords() const {
+    RectCoords hec = {0, 0, 0};
+    return hec;
+}
+
+RectCoords Earth::geo_ecl_coords() const {
+    RectCoords gec = {0, 0, 0};
+    return gec;
+}
+
+RectCoords Earth::geo_equ_coords() const {
+    RectCoords gqc = {0, 0, 0};
+    return gqc;
 }
 
 
@@ -97,4 +251,98 @@ OrbElem Planet::calc_orbital_elements(tm * calc_time) const {
 
 std::string Mars::name() const {
     return "Mars";
+}
+
+std::string Earth::name() const {
+    return "Earth";
+}
+
+std::string Sun::name() const {
+    return "Sun";
+}
+
+std::string Mercury::name() const {
+    return "Mercury";
+}
+
+std::string Venus::name() const {
+    return "Venus";
+}
+
+std::string Jupiter::name() const {
+    return "Jupiter";
+}
+
+std::string Saturn::name() const {
+    return "Saturn";
+}
+
+std::string Uranus::name() const {
+    return "Uranus";
+}
+
+std::string Neptune::name() const {
+    return "Neptune";
+}
+
+std::string Pluto::name() const {
+    return "Pluto";
+}
+
+void astro::show_planet_positions(std::ostream& out) {
+
+    //  Set up planets
+
+    astro::Sun sun(0);
+    astro::Mercury mercury(0);
+    astro::Venus venus(0);
+    astro::Mars mars(0);
+    astro::Jupiter jupiter(0);
+    astro::Saturn saturn(0);
+    astro::Uranus uranus(0);
+    astro::Neptune neptune(0);
+    astro::Pluto pluto(0);
+
+    astro::Planet* planets[] = {&sun, &mercury, &venus,
+                                &mars, &jupiter, &saturn,
+                                &uranus, &neptune, &pluto};
+
+    //  Set up ios flags, and set precision
+
+    std::ios_base::fmtflags original_flags = out.flags();
+    std::streamsize origprec = out.precision(7);
+    out.setf(out.fixed);
+    
+    //  Output planetary positions
+
+    out << "Current planetary data for "
+        << sun.calc_time()
+        << std::endl << std::endl;
+
+    out << "PLANET    R.ASCENSION   DECLINATION  DIST (AU)*"
+              << " ZODIAC ZODIAC SIGN"
+              << std::endl;
+    out << "=======   ===========  ============= =========="
+              << " ====== ==========="
+              << std::endl;
+
+    for ( int i = 0; i < 9; ++i ) {
+        out.unsetf(std::ios::right);
+        out.setf(std::ios::left, std::ios::adjustfield);
+        out << std::setw(8) << planets[i]->name();
+        out.unsetf(std::ios::left);
+        out.setf(std::ios::right, std::ios::adjustfield);
+        out << ": "
+            << astro::rasc_string(planets[i]->right_ascension()) << ", "
+            << astro::decl_string(planets[i]->declination()) << ", "
+            << std::setw(10) << planets[i]->distance() << " "
+            << astro::rasc_to_zodiac(planets[i]->right_ascension()) << " "
+            << astro::zodiac_sign(planets[i]->right_ascension())
+            << std::endl;
+    }
+
+    //  Set ios flags and precision back to original values
+
+    out.precision(origprec);
+    out.flags(original_flags);
 }
