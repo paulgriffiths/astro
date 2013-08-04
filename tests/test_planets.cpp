@@ -318,7 +318,7 @@ TEST(PlanetsGroup, PlutoTest) {
 
 
 /*
- *  Tests position of Pluto for June 4, 2013, 01:15 UTC.
+ *  Tests position of the Sun for June 4, 2013, 01:15 UTC.
  */
 
 TEST(PlanetsGroup, SunTest) {
