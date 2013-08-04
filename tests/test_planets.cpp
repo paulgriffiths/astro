@@ -60,7 +60,7 @@ TEST(PlanetsGroup, MercuryTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 1.30377991344909;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -96,7 +96,7 @@ TEST(PlanetsGroup, VenusTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 1.23214680691694;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -132,7 +132,7 @@ TEST(PlanetsGroup, MarsTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 1.18174124286972;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -168,7 +168,7 @@ TEST(PlanetsGroup, JupiterTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 5.9852047799159;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -204,7 +204,7 @@ TEST(PlanetsGroup, SaturnTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 8.84280824210253;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -240,7 +240,7 @@ TEST(PlanetsGroup, UranusTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 19.4873488102392;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -276,7 +276,7 @@ TEST(PlanetsGroup, NeptuneTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 30.8457020366069;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -312,7 +312,7 @@ TEST(PlanetsGroup, PlutoTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 30.5130260187628;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
 
@@ -348,6 +348,6 @@ TEST(PlanetsGroup, SunTest) {
     DOUBLES_EQUAL(expected_result, test_result, de_accuracy);
 
     expected_result = 1.01447036664534;
-    test_result = normalize_degrees(cds.distance);
+    test_result = cds.distance;
     DOUBLES_EQUAL(expected_result, test_result, di_accuracy);
 }
