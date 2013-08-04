@@ -227,7 +227,16 @@ double Planet::distance() const {
 
 /*
  *  Overridden coordinate functions.
+ *
+ *  Heliocentric coordinates for the Sun will obviously always be
+ *  zero. Likewise, geocentric coordinates for the Earth will also
+ *  always be zero.
  */
+
+RectCoords Sun::helio_orb_coords() const {
+    RectCoords hoc = {0, 0, 0};
+    return hoc;
+}
 
 RectCoords Sun::helio_ecl_coords() const {
     RectCoords hec = {0, 0, 0};
@@ -249,10 +258,6 @@ RectCoords Earth::geo_equ_coords() const {
  *  Returns the planet's name.
  */
 
-std::string Mars::name() const {
-    return "Mars";
-}
-
 std::string Earth::name() const {
     return "Earth";
 }
@@ -267,6 +272,10 @@ std::string Mercury::name() const {
 
 std::string Venus::name() const {
     return "Venus";
+}
+
+std::string Mars::name() const {
+    return "Mars";
 }
 
 std::string Jupiter::name() const {
@@ -288,6 +297,11 @@ std::string Neptune::name() const {
 std::string Pluto::name() const {
     return "Pluto";
 }
+
+
+/*
+ *  Standalone function to output all the planetary positions.
+ */
 
 void astro::show_planet_positions(std::ostream& out) {
 

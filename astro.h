@@ -155,6 +155,7 @@ class Sun: public Planet {
         ~Sun() {};
 
         virtual std::string name() const;
+        virtual RectCoords helio_orb_coords() const;
         virtual RectCoords helio_ecl_coords() const;
 };
 
