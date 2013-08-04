@@ -1,6 +1,17 @@
-// astrofunc.cpp
-// Copyright 2013 Paul Griffiths
+/*
+ *  astrofunc.cpp
+ *  =============
+ *  Copyright 2013 Paul Griffiths
+ *  Email: mail@paulgriffiths.net
+ *
+ *  Implementation of astronomical functions.
+ *
+ *  Distributed under the terms of the GNU General Public License.
+ *  http://www.gnu.org/licenses/
+ */
 
+
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <string>
@@ -10,6 +21,13 @@
 #include <ctime>
 
 #include "astrofunc.h"
+
+
+/*
+ *  Converts a degree angle to hours, minutes and seconds
+ *  and stores the result (and modifies) the supplied
+ *  HMS struct.
+ */
 
 void deg_to_hms(const double degrees, HMS& hmsout) {
     double norm_degs = normalize_degrees(degrees);
@@ -27,6 +45,13 @@ void deg_to_hms(const double degrees, HMS& hmsout) {
     assert(hmsout.seconds < 60);
 }
 
+
+/*
+ *  Converts a degree angle to degrees, minutes and seconds
+ *  and stores the result (and modifies) the supplied
+ *  DMS struct.
+ */
+
 void deg_to_dms(const double degrees, DMS& dmsout) {
     int total_seconds = degrees > 0 ? floor(degrees * 3600) :
                                       ceil(degrees * 3600);
@@ -41,6 +66,13 @@ void deg_to_dms(const double degrees, DMS& dmsout) {
     assert(dmsout.seconds > -60);
     assert(dmsout.seconds < 60);
 }
+
+
+/*
+ *  Calculates information pertaining to the zodiacal position
+ *  of the supplied right ascension, and stores the result in
+ *  (and modifies) the supplied ZodiacInfo struct.
+ */
 
 void get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
     double norm_degs = normalize_degrees(rasc);
@@ -64,17 +96,84 @@ void get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
     zInfo.seconds = dms.seconds;
 }
 
-double julian_date(const time_t * in_time) {
-    double epoch_jdate = 2451545;              // Jan 1 2000 12:00 UTC
-    time_t epoch_cal_time = 946728000;         // Jan 1 2000 12:00 UTC
 
-    time_t calc_cal_time = in_time == NULL ? time(NULL) : *in_time;
+/*
+ *  Calculates the Julian Date for the supplied UTC time.
+ *
+ *  The supplied time is a standard tm struct representing
+ *  a UTC time. The supplied time is modified by mktime(),
+ *  but the modified information will not be reliable, since
+ *  julian_date() interprets the tm struct as UTC time, and
+ *  mktime() will interpret it as local time.
+ */
 
-    double seconds_since_epoch = difftime(calc_cal_time, epoch_cal_time);
-    double days_since_epoch = seconds_since_epoch / 86400;
+double julian_date(tm * utc_time) {
+    double seconds_since_j2000;
 
-    return epoch_jdate + days_since_epoch;
+    if ( utc_time == 0 ) {
+
+        //  If no time was specified, just get the difference in
+        //  seconds between the current UNIX timestamp, and the
+        //  UNIX timestamp at J2000.
+
+        time_t unix_epoch_j2000 = 946728000;
+        time_t utc_t = time(0);
+        seconds_since_j2000 = difftime(utc_t, unix_epoch_j2000);
+
+    } else {
+
+        //  If a time was specified, we're interpreting it as UTC,
+        //  so we have some work to do.
+
+        //  First calculate the UNIX timestamp for Jan 1, 2000, 12:00pm,
+        //  as if the current system were on GMT. Make sure we ignore
+        //  DST, although it'll be off on Jan 1 anyway.
+
+        tm j2000_epoch_tm;
+        j2000_epoch_tm.tm_sec = 0;
+        j2000_epoch_tm.tm_min = 0;
+        j2000_epoch_tm.tm_hour = 12;
+        j2000_epoch_tm.tm_mday = 1;
+        j2000_epoch_tm.tm_mon = 0;
+        j2000_epoch_tm.tm_year = 100;
+        j2000_epoch_tm.tm_isdst = 0;
+        time_t j2000_epoch = mktime(&j2000_epoch_tm);
+
+        //  Then get the UNIX timestamp for the specified time, again
+        //  as if the current system were on GMT. This time we really
+        //  do need to be sure we're ignoring DST, as UTC has no
+        //  concept of it and the date specified might be during the
+        //  summer.
+        //
+        //  Note that this assumes that, after ignoring DST, there is
+        //  no difference between local time and UTC except a constant
+        //  time offset.
+
+        tm calc_time = *utc_time;
+        calc_time.tm_isdst = 0;
+        time_t utc_t = mktime(&calc_time);
+
+        //  Then calculate the difference between the two times.
+
+        seconds_since_j2000 = difftime(utc_t, j2000_epoch);
+
+    }
+        
+
+    return EPOCH_J2000 + seconds_since_j2000 / 86400;
 }
+
+
+/*
+ *  Solves Kepler's equation.
+ *
+ *  Arguments:
+ *    m_anom - mean anomaly, in radians
+ *    ecc - eccentricity
+ *
+ *  Returns:
+ *    the eccentric anomaly, in radians.
+ */
 
 double kepler(const double m_anom, const double ecc) {
     double desired_accuracy = 1e-6;
@@ -89,6 +188,14 @@ double kepler(const double m_anom, const double ecc) {
     return e_anom;
 }
 
+
+/*
+ *  Converts rectangular coordinates to spherical coordinates.
+ *
+ *  This function stores the result in (and modifies) the supplied
+ *  SphCoords struct.
+ */
+
 void rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
     scd.right_ascension = degrees(atan2(rcd.y, rcd.x));
     scd.declination = degrees(atan(rcd.z / sqrt(pow(rcd.x, 2) +
@@ -96,17 +203,36 @@ void rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
     scd.distance = sqrt(pow(rcd.x, 2) + pow(rcd.y, 2) + pow(rcd.z, 2));
 }
 
+
+/*
+ *  Returns a pointer to a C string representation of the
+ *  of the name of the zodiac sign which contains the supplied
+ *  right ascension.
+ */
+
 const char * zodiac_sign(const double rasc) {
     ZodiacInfo zInfo;
     get_zodiac_info(rasc, zInfo);
     return zInfo.sign_name;
 }
 
+/*
+ *  Returns a pointer to a C string representation of the
+ *  of the short name of the zodiac sign which contains the supplied
+ *  right ascension.
+ */
+
 const char * zodiac_sign_short(const double rasc) {
     ZodiacInfo zInfo;
     get_zodiac_info(rasc, zInfo);
     return zInfo.sign_short_name;
 }
+
+
+/*
+ *  Returns a zodiacal coordinate of the form 20GE19 for
+ *  the supplied right ascension.
+ */
 
 std::string rasc_to_zodiac(const double rasc) {
     ZodiacInfo zInfo;
@@ -120,6 +246,13 @@ std::string rasc_to_zodiac(const double rasc) {
     return oStream.str();
 }
 
+
+/*
+ *  Returns a string representation in the form "12h 10m 30s" of
+ *  the hours-minutes-seconds representation of the supplied right
+ *  ascension.
+ */
+
 std::string rasc_string(const double rasc) {
     HMS hms;
     deg_to_hms(rasc, hms);
@@ -132,6 +265,13 @@ std::string rasc_string(const double rasc) {
     
     return oStream.str();
 }
+
+
+/*
+ *  Returns a string representation in the form "+212d 10m 30s" of
+ *  the degrees-minutes-seconds representation of the supplied
+ *  declination.
+ */
 
 std::string decl_string(const double decl) {
     DMS dms;
