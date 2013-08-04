@@ -11,75 +11,14 @@
  */
 
 
-#ifndef PG_ASTROFUNC_H
-#define PG_ASTROFUNC_H
+#ifndef PG_ASTRO_ASTROFUNC_H
+#define PG_ASTRO_ASTROFUNC_H
 
 #include <string>
 #include <cmath>
+#include "astro_common_types.h"
 
 namespace astro {
-
-/*
- *  Structures
- */
-
-struct ZodiacInfo {
-    double right_ascension;
-    int sign_index;
-    const char * sign_name;
-    const char * sign_short_name;
-    int degrees;
-    int minutes;
-    int seconds;
-};
-
-struct HMS {
-    int hours;
-    int minutes;
-    int seconds;
-};
-
-struct DMS {
-    int degrees;
-    int minutes;
-    int seconds;
-};
-
-struct SphCoords {
-    double right_ascension;
-    double declination;
-    double distance;
-};
-
-struct RectCoords {
-    double x;
-    double y;
-    double z;
-};
-
-
-/*
- *  Constants & enumerations
- */
-
-const char * const ZODIAC_SIGNS[] = {
-    "Aries", "Taurus", "Gemini", "Cancer",
-    "Leo", "Virgo", "Libra", "Scorpio",
-    "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-};
-
-const char * const ZODIAC_SIGNS_SHORT[] = {
-    "AR", "TA", "GE", "CN", "LE", "VI",
-    "LI", "SC", "SG", "CP", "AQ", "PI"
-};
-
-const double PI = 3.14159265358979323846;
-
-const double EPOCH_J2000 = 2451545;
-
-enum zodiac {ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO,
-             LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES};
-
 
 /*
  *  Function prototypes
@@ -134,4 +73,4 @@ inline double radians(const double degrees) {
 
 }           //  namespace astro
 
-#endif          // PG_ASTROFUNC_H
+#endif          // PG_ASTRO_ASTROFUNC_H

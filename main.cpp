@@ -3,10 +3,7 @@
 #include <ctime>
 #include <cstdio>
 
-#include "astrofunc.h"
 #include "astro.h"
-
-void show_planet_positions();
 
 int main(void) {
 

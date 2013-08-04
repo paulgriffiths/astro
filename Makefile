@@ -30,7 +30,7 @@ LD_TEST_FLAGS=-lCppUTest -lCppUTestExt
 MAINOBJ=main.o
 TESTMAINOBJ=tests/unittests.o
 
-OBJS=astro.o astrofunc.o
+OBJS=base_planet.o planets.o astrofunc.o planet_func.o
 
 TESTOBJS=tests/test_julian_date.o
 TESTOBJS+=tests/test_kepler.o
@@ -110,10 +110,16 @@ testmain: $(TESTMAINOBJ) $(TESTOBJS) $(OBJS)
 
 # Main program
 
-main.o: main.cpp astro.h astrofunc.h
+main.o: main.cpp astro.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-astro.o: astro.cpp astro.h astrofunc.h
+base_planet.o: base_planet.cpp base_planet.h astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+planets.o: planets.cpp planets.h astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+planet_func.o: planet_func.cpp planet_func.h astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 astrofunc.o: astrofunc.cpp astrofunc.h

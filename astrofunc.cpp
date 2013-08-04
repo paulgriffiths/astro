@@ -20,9 +20,26 @@
 #include <cassert>
 #include <ctime>
 
+#include "astro_common_types.h"
 #include "astrofunc.h"
 
 using namespace astro;
+
+
+namespace {
+
+const char * const ZODIAC_SIGNS[] = {
+    "Aries", "Taurus", "Gemini", "Cancer",
+    "Leo", "Virgo", "Libra", "Scorpio",
+    "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+};
+
+const char * const ZODIAC_SIGNS_SHORT[] = {
+    "AR", "TA", "GE", "CN", "LE", "VI",
+    "LI", "SC", "SG", "CP", "AQ", "PI"
+};
+
+}           //  namespace
 
 
 /*

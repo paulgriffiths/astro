@@ -1,10 +1,10 @@
 /*
- *  astro.cpp
- *  =========
+ *  base_planet.cpp
+ *  ===============
  *  Copyright 2013 Paul Griffiths
  *  Email: mail@paulgriffiths.net
  *
- *  Implementation of astronomical classes.
+ *  Implementation of abstract base Planet class.
  *
  *  Distributed under the terms of the GNU General Public License.
  *  http://www.gnu.org/licenses/
@@ -16,12 +16,16 @@
 #include <string>
 #include <ctime>
 #include <cmath>
-#include "astro.h"
+#include "astro_common_types.h"
 #include "astrofunc.h"
+#include "base_planet.h"
+#include "planets.h"
 
 using std::cos;
 using std::sin;
 using std::sqrt;
+using std::pow;
+using std::strftime;
 
 using namespace astro;
 
@@ -89,8 +93,8 @@ std::string Planet::calc_time() const {
  *  Returns orbital elements for the specified time.
  */
 
-OrbElem Planet::calc_orbital_elements(tm * calc_time) const {
-    double jdc = (julian_date(calc_time) - EPOCH_J2000) / 36525;
+OrbElem Planet::calc_orbital_elements(std::tm* calc_time) const {
+    const double jdc = (julian_date(calc_time) - EPOCH_J2000) / 36525;
 
     OrbElem oes;
     oes.sma = ELEMENTS_J2000[m_number].sma + ELEMENTS_CENT[m_number].sma * jdc;
@@ -155,9 +159,9 @@ RectCoords Planet::helio_ecl_coords() const {
  */
 
 RectCoords Planet::geo_ecl_coords() const {
-    const RectCoords hec = helio_ecl_coords();
     tm temp_tm = m_calc_time;
     const RectCoords eec = Earth(&temp_tm).helio_ecl_coords();
+    const RectCoords hec = helio_ecl_coords();
 
     RectCoords gec;
 
@@ -222,141 +226,4 @@ double Planet::distance() const {
     rec_to_sph(gqc, sph);
 
     return sph.distance;
-}
-
-
-/*
- *  Overridden coordinate functions.
- *
- *  Heliocentric coordinates for the Sun will obviously always be
- *  zero. Likewise, geocentric coordinates for the Earth will also
- *  always be zero.
- */
-
-RectCoords Sun::helio_orb_coords() const {
-    const RectCoords hoc = {0, 0, 0};
-    return hoc;
-}
-
-RectCoords Sun::helio_ecl_coords() const {
-    const RectCoords hec = {0, 0, 0};
-    return hec;
-}
-
-RectCoords Earth::geo_ecl_coords() const {
-    const RectCoords gec = {0, 0, 0};
-    return gec;
-}
-
-RectCoords Earth::geo_equ_coords() const {
-    const RectCoords gqc = {0, 0, 0};
-    return gqc;
-}
-
-
-/*
- *  Returns the planet's name.
- */
-
-std::string Earth::name() const {
-    return "Earth";
-}
-
-std::string Sun::name() const {
-    return "Sun";
-}
-
-std::string Mercury::name() const {
-    return "Mercury";
-}
-
-std::string Venus::name() const {
-    return "Venus";
-}
-
-std::string Mars::name() const {
-    return "Mars";
-}
-
-std::string Jupiter::name() const {
-    return "Jupiter";
-}
-
-std::string Saturn::name() const {
-    return "Saturn";
-}
-
-std::string Uranus::name() const {
-    return "Uranus";
-}
-
-std::string Neptune::name() const {
-    return "Neptune";
-}
-
-std::string Pluto::name() const {
-    return "Pluto";
-}
-
-
-/*
- *  Standalone function to output all the planetary positions.
- */
-
-void astro::show_planet_positions(std::ostream& out) {
-
-    //  Set up planets
-
-    astro::Sun sun(0);
-    astro::Mercury mercury(0);
-    astro::Venus venus(0);
-    astro::Mars mars(0);
-    astro::Jupiter jupiter(0);
-    astro::Saturn saturn(0);
-    astro::Uranus uranus(0);
-    astro::Neptune neptune(0);
-    astro::Pluto pluto(0);
-
-    astro::Planet* planets[] = {&sun, &mercury, &venus,
-                                &mars, &jupiter, &saturn,
-                                &uranus, &neptune, &pluto};
-
-    //  Set up ios flags, and set precision
-
-    std::ios_base::fmtflags original_flags = out.flags();
-    std::streamsize origprec = out.precision(7);
-    out.setf(out.fixed);
-    
-    //  Output planetary positions
-
-    out << "Current planetary data for "
-        << sun.calc_time()
-        << std::endl << std::endl;
-
-    out << "PLANET    R.ASCENSION   DECLINATION  DIST (AU)*"
-              << " ZODIAC ZODIAC SIGN"
-              << std::endl;
-    out << "=======   ===========  ============= =========="
-              << " ====== ==========="
-              << std::endl;
-
-    for ( int i = 0; i < 9; ++i ) {
-        out.unsetf(std::ios::right);
-        out.setf(std::ios::left, std::ios::adjustfield);
-        out << std::setw(8) << planets[i]->name();
-        out.unsetf(std::ios::left);
-        out.setf(std::ios::right, std::ios::adjustfield);
-        out << ": "
-            << astro::rasc_string(planets[i]->right_ascension()) << ", "
-            << astro::decl_string(planets[i]->declination()) << ", "
-            << std::setw(10) << planets[i]->distance() << " "
-            << astro::rasc_to_zodiac(planets[i]->right_ascension()) << " "
-            << astro::zodiac_sign(planets[i]->right_ascension())
-            << std::endl;
-    }
-
-    //  Set ios flags and precision back to original values
-
-    out.precision(origprec);
-    out.flags(original_flags);
 }
