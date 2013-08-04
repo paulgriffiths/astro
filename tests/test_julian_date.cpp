@@ -23,6 +23,8 @@
 #include <ctime>
 #include "../astrofunc.h"
 
+using namespace astro;
+
 
 TEST_GROUP(JulianDateGroup) {
 };

@@ -22,6 +22,8 @@
 #include <CppUTest/CommandLineTestRunner.h>
 #include "../astrofunc.h"
 
+using namespace astro;
+
 
 TEST_GROUP(KeplerGroup) {
 };
