@@ -32,7 +32,8 @@ TESTMAINOBJ=tests/unittests.o
 
 OBJS=astro.o astrofunc.o
 
-TESTOBJS=tests/
+TESTOBJS=tests/test_julian_date.o
+TESTOBJS+=tests/test_kepler.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -119,6 +120,11 @@ astrofunc.o: astrofunc.cpp astrofunc.h
 tests/unittests.o: tests/testmain.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-tests/test_:
-	tests/test_
+tests/test_julian_date.o: tests/test_julian_date.cpp \
+	astrofunc.cpp astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_kepler.o: tests/test_kepler.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
