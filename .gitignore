@@ -2,6 +2,8 @@
 *.slo
 *.lo
 *.o
+astro
+unittests
 
 # Compiled Dynamic libraries
 *.so
@@ -11,3 +13,6 @@
 *.lai
 *.la
 *.a
+
+# Vim swap files
+*.swp
