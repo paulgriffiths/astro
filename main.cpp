@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include <cstdio>
 
 #include "astrofunc.h"
@@ -10,19 +11,19 @@ int main(void) {
 
     //  Test normalize_degrees()
     
-    normalize_degrees(360.0);
-    normalize_degrees(0.0);
+    astro::normalize_degrees(360.0);
+    astro::normalize_degrees(0.0);
 
     std::cout << "Angle before is: " << angle << std::endl;
 
-    angle = normalize_degrees(angle);
+    angle = astro::normalize_degrees(angle);
 
     std::cout << "Angle after is: " << angle << std::endl;
 
     //  Test deg_to_hms()
 
-    HMS hms;
-    deg_to_hms(angle, hms);
+    astro::HMS hms;
+    astro::deg_to_hms(angle, hms);
 
     std::cout << "Which is " << hms.hours << " hours, "
               << hms.minutes << " minutes, and " << hms.seconds
@@ -30,9 +31,9 @@ int main(void) {
 
     //  Test deg_to_dms()
 
-    DMS dms;
+    astro::DMS dms;
     angle = 180.999999999;
-    deg_to_dms(angle, dms);
+    astro::deg_to_dms(angle, dms);
 
     std::cout << "Angle is now " << angle << " degrees." << std::endl;
     std::cout << "Which is " << dms.degrees << " degrees, "
@@ -42,9 +43,9 @@ int main(void) {
     //  Test get_zodiac_info()
 
     angle = 98.234;
-    deg_to_dms(angle, dms);
-    ZodiacInfo zInfo;
-    get_zodiac_info(angle, zInfo);
+    astro::deg_to_dms(angle, dms);
+    astro::ZodiacInfo zInfo;
+    astro::get_zodiac_info(angle, zInfo);
 
     std::cout << "Angle is now " << angle << " degrees." << std::endl;
     std::cout << "Which is " << dms.degrees << " degrees, "
@@ -57,7 +58,7 @@ int main(void) {
 
     //  Test julian_date()
 
-    double jdate = julian_date(NULL);
+    double jdate = astro::julian_date(NULL);
     char temp_char[100] = {0};
     sprintf(temp_char, "%0.5f", jdate);
 
@@ -67,49 +68,49 @@ int main(void) {
 
     double m = 27;
     double e = 0.5;
-    double e_anom = degrees(kepler(radians(m), e));
+    double e_anom = astro::degrees(astro::kepler(astro::radians(m), e));
 
     std::cout << "Kepler's solution is " << e_anom << " for 27, 0.5"
               << std::endl;
 
     //  Test rec_to_sph()
 
-    RectCoords rcd = {5, 7, 3};
-    SphCoords scd;
-    rec_to_sph(rcd, scd);
+    astro::RectCoords rcd = {5, 7, 3};
+    astro::SphCoords scd;
+    astro::rec_to_sph(rcd, scd);
 
     //  Test zodiac_sign()
 
     angle = 135;
 
     std::cout << "Zodiac sign for angle " << angle << " is "
-              << zodiac_sign(angle) << ", or "
-              << zodiac_sign_short(angle)<< " for short." << std::endl;
+              << astro::zodiac_sign(angle) << ", or "
+              << astro::zodiac_sign_short(angle)<< " for short." << std::endl;
 
     // Test rasc_to_zodiac
 
     std::cout << "Zodiac date for 135 degrees is "
-              << rasc_to_zodiac(135) << std::endl;
+              << astro::rasc_to_zodiac(135) << std::endl;
     std::cout << "Zodiac date for 241.52 degrees is "
-              << rasc_to_zodiac(241.51) << std::endl;
+              << astro::rasc_to_zodiac(241.51) << std::endl;
     std::cout << "Zodiac date for 423.89 degrees is "
-              << rasc_to_zodiac(423.89) << std::endl;
+              << astro::rasc_to_zodiac(423.89) << std::endl;
 
     //  Test rasc_string
 
     std::cout << "rasc string for 257.38 degrees is "
-              << rasc_string(257.38) << std::endl;
+              << astro::rasc_string(257.38) << std::endl;
 
     //  Test decl_string
 
     std::cout << "decl string for 132.91 degrees is "
-              << decl_string(132.91) << std::endl;
+              << astro::decl_string(132.91) << std::endl;
     std::cout << "decl string for -71.32 degrees is "
-              << decl_string(-71.32) << std::endl;
+              << astro::decl_string(-71.32) << std::endl;
 
     // Test planet
 
-    Mars myplanet;
+    astro::Mars myplanet(0);
 
     return 0;
 }
