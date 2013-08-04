@@ -17,6 +17,7 @@
 #include <string>
 #include <cmath>
 
+namespace astro {
 
 /*
  *  Structures
@@ -128,5 +129,7 @@ inline double degrees(const double radians) {
 inline double radians(const double degrees) {
     return degrees * (PI / 180);
 }
+
+}           //  namespace astro
 
 #endif          // PG_ASTROFUNC_H

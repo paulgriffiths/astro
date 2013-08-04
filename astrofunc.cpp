@@ -22,6 +22,8 @@
 
 #include "astrofunc.h"
 
+using namespace astro;
+
 
 /*
  *  Converts a degree angle to hours, minutes and seconds
@@ -29,7 +31,7 @@
  *  HMS struct.
  */
 
-void deg_to_hms(const double degrees, HMS& hmsout) {
+void astro::deg_to_hms(const double degrees, HMS& hmsout) {
     double norm_degs = normalize_degrees(degrees);
     int total_seconds = floor((norm_degs / 360) * 86400);
 
@@ -52,7 +54,7 @@ void deg_to_hms(const double degrees, HMS& hmsout) {
  *  DMS struct.
  */
 
-void deg_to_dms(const double degrees, DMS& dmsout) {
+void astro::deg_to_dms(const double degrees, DMS& dmsout) {
     int total_seconds = degrees > 0 ? floor(degrees * 3600) :
                                       ceil(degrees * 3600);
 
@@ -74,7 +76,7 @@ void deg_to_dms(const double degrees, DMS& dmsout) {
  *  (and modifies) the supplied ZodiacInfo struct.
  */
 
-void get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
+void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
     double norm_degs = normalize_degrees(rasc);
     DMS dms;
     deg_to_dms(norm_degs, dms);
@@ -107,7 +109,7 @@ void get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
  *  mktime() will interpret it as local time.
  */
 
-double julian_date(tm * utc_time) {
+double astro::julian_date(tm * utc_time) {
     double seconds_since_j2000;
 
     if ( utc_time == 0 ) {
@@ -175,7 +177,7 @@ double julian_date(tm * utc_time) {
  *    the eccentric anomaly, in radians.
  */
 
-double kepler(const double m_anom, const double ecc) {
+double astro::kepler(const double m_anom, const double ecc) {
     double desired_accuracy = 1e-6;
     double e_anom = m_anom;
     double diff;
@@ -196,7 +198,7 @@ double kepler(const double m_anom, const double ecc) {
  *  SphCoords struct.
  */
 
-void rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
+void astro::rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
     scd.right_ascension = degrees(atan2(rcd.y, rcd.x));
     scd.declination = degrees(atan(rcd.z / sqrt(pow(rcd.x, 2) +
                                                 pow(rcd.y, 2))));
@@ -210,7 +212,7 @@ void rec_to_sph(const RectCoords& rcd, SphCoords& scd) {
  *  right ascension.
  */
 
-const char * zodiac_sign(const double rasc) {
+const char * astro::zodiac_sign(const double rasc) {
     ZodiacInfo zInfo;
     get_zodiac_info(rasc, zInfo);
     return zInfo.sign_name;
@@ -222,7 +224,7 @@ const char * zodiac_sign(const double rasc) {
  *  right ascension.
  */
 
-const char * zodiac_sign_short(const double rasc) {
+const char * astro::zodiac_sign_short(const double rasc) {
     ZodiacInfo zInfo;
     get_zodiac_info(rasc, zInfo);
     return zInfo.sign_short_name;
@@ -234,7 +236,7 @@ const char * zodiac_sign_short(const double rasc) {
  *  the supplied right ascension.
  */
 
-std::string rasc_to_zodiac(const double rasc) {
+std::string astro::rasc_to_zodiac(const double rasc) {
     ZodiacInfo zInfo;
     get_zodiac_info(rasc, zInfo);
 
@@ -253,7 +255,7 @@ std::string rasc_to_zodiac(const double rasc) {
  *  ascension.
  */
 
-std::string rasc_string(const double rasc) {
+std::string astro::rasc_string(const double rasc) {
     HMS hms;
     deg_to_hms(rasc, hms);
 
@@ -273,7 +275,7 @@ std::string rasc_string(const double rasc) {
  *  declination.
  */
 
-std::string decl_string(const double decl) {
+std::string astro::decl_string(const double decl) {
     DMS dms;
     deg_to_dms(decl, dms);
 
@@ -286,4 +288,3 @@ std::string decl_string(const double decl) {
     
     return oStream.str();
 }
-
