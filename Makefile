@@ -39,6 +39,7 @@ TESTOBJS+=tests/test_rasc_to_zodiac.o
 TESTOBJS+=tests/test_zodiac_sign.o
 TESTOBJS+=tests/test_zodiac_sign_short.o
 TESTOBJS+=tests/test_planets.o
+TESTOBJS+=tests/test_moon.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -159,6 +160,10 @@ tests/test_zodiac_sign_short.o: tests/test_zodiac_sign_short.cpp \
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 tests/test_planets.o: tests/test_planets.cpp \
+	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_moon.o: tests/test_moon.cpp \
 	astrofunc.cpp astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
