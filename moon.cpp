@@ -157,7 +157,6 @@ RectCoords MoonBase::helio_orb_coords() const {
 
 /*
  *  Calculates the planet's heliocentric ecliptic coordinates.
-    iouble n = 0;
  */
 
 RectCoords MoonBase::helio_ecl_coords() const {
