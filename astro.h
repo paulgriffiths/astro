@@ -16,6 +16,7 @@
 
 #include "astrofunc.h"
 #include "planets.h"
+#include "moon.h"
 #include "planet_func.h"
 
 #endif          // PG_ASTRO_H

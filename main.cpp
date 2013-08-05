@@ -29,5 +29,9 @@ int main(void) {
 
     astro::show_planet_positions(std::cout);
 
+    astro::Moon moon(0);
+
+    astro::OrbElem oes = moon.get_orbital_elements();
+
     return 0;
 }

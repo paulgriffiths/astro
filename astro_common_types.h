@@ -17,7 +17,9 @@
 namespace astro {
 
 enum planets {sun, mercury, venus, earth, mars,
-              jupiter, saturn, uranus, neptune, pluto};
+              jupiter, saturn, uranus, neptune, pluto, moon};
+
+enum moon_planets {moon_moon, moon_sun};
 
 enum zodiac {ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO,
              LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES};
