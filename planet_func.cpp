@@ -16,6 +16,7 @@
 #include "astro_common_types.h"
 #include "astrofunc.h" 
 #include "planets.h"
+#include "moon.h"
 #include "planet_func.h"
 
 using namespace astro;
@@ -38,6 +39,7 @@ void astro::show_planet_positions(std::ostream& out) {
     const Uranus uranus(0);
     const Neptune neptune(0);
     const Pluto pluto(0);
+    const Moon moon(0);
 
     const Planet* planets[] = {&sun, &mercury, &venus,
                                &mars, &jupiter, &saturn,
@@ -76,6 +78,19 @@ void astro::show_planet_positions(std::ostream& out) {
             << zodiac_sign(planets[i]->right_ascension())
             << std::endl;
     }
+
+    out.unsetf(std::ios::right);
+    out.setf(std::ios::left, std::ios::adjustfield);
+    out << std::setw(8) << moon.name();
+    out.unsetf(std::ios::left);
+    out.setf(std::ios::right, std::ios::adjustfield);
+    out << ": "
+        << rasc_string(moon.right_ascension()) << ", "
+        << decl_string(moon.declination()) << ", "
+        << std::setw(10) << moon.distance() << " "
+        << rasc_to_zodiac(moon.right_ascension()) << " "
+        << zodiac_sign(moon.right_ascension())
+        << std::endl;
 
     //  Set ios flags and precision back to original values
 
