@@ -298,9 +298,9 @@ double MoonBase::distance() const {
 
 
 std::string Moon::name() const {
-return "Moon";
+    return "Moon";
 }
 
 std::string SunForMoon::name() const {
-return " - XXXX - Sun For Moon - XXXX -";
+    return " - XXXX - Sun For Moon - XXXX -";
 }
