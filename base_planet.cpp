@@ -115,6 +115,15 @@ OrbElem Planet::calc_orbital_elements(std::tm* calc_time) const {
 
 
 /*
+ *  Return the orbital elements.
+ */
+
+OrbElem Planet::get_orbital_elements() const {
+    return m_oes;
+}
+
+
+/*
  *  Calculates the planet's heliocentric orbital coordinates.
  */
 

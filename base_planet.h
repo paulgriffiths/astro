@@ -36,6 +36,7 @@ class Planet {
         virtual std::string name() const = 0;
         std::string calc_time() const;
 
+        OrbElem get_orbital_elements() const;
         virtual RectCoords helio_orb_coords() const;
         virtual RectCoords helio_ecl_coords() const;
         virtual RectCoords geo_ecl_coords() const;
