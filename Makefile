@@ -18,7 +18,7 @@ TESTOUT=unittests
 CXX=g++
 
 # Compiler flags
-CXXFLAGS=-ansi -pedantic -Wall -Wextra -Weffc++
+CXXFLAGS=-std=c++98 -pedantic -Wall -Wextra -Weffc++
 CXX_DEBUG_FLAGS=-ggdb -DDEBUG -DDEBUG_ALL
 CXX_RELEASE_FLAGS=-O3 -DNDEBUG
 
