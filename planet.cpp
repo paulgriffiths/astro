@@ -110,14 +110,14 @@ RectCoords Planet::helio_ecl_coords() const {
 
 RectCoords Planet::geo_equ_coords() const {
     static const double obliquity = radians(23.43928);
-    const RectCoords hec = geo_ecl_coords();
-    RectCoords gec;
+    const RectCoords gec = geo_ecl_coords();
+    RectCoords gqc;
 
-    gec.x = hec.x;
-    gec.y = hec.y * cos(obliquity) - hec.z * sin(obliquity);
-    gec.z = hec.y * sin(obliquity) + hec.z * cos(obliquity);
+    gqc.x = gec.x;
+    gqc.y = gec.y * cos(obliquity) - gec.z * sin(obliquity);
+    gqc.z = gec.y * sin(obliquity) + gec.z * cos(obliquity);
 
-    return gec;
+    return gqc;
 }
 
 
