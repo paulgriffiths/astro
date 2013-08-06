@@ -13,7 +13,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include "astro_common_types.h"
 #include "astrofunc.h" 
 #include "planets.h"
 #include "moon.h"
@@ -43,7 +42,7 @@ void astro::show_planet_positions(std::ostream& out) {
 
     const Planet* planets[] = {&sun, &mercury, &venus,
                                &mars, &jupiter, &saturn,
-                               &uranus, &neptune, &pluto};
+                               &uranus, &neptune, &pluto, &moon};
 
     //  Set up ios flags, and set precision
 
@@ -54,7 +53,7 @@ void astro::show_planet_positions(std::ostream& out) {
     //  Output planetary positions
 
     out << "Current planetary data for "
-        << sun.calc_time()
+        << sun.calc_time_string()
         << std::endl << std::endl;
 
     out << "PLANET    R.ASCENSION   DECLINATION  DIST (AU)*"
@@ -64,7 +63,7 @@ void astro::show_planet_positions(std::ostream& out) {
         << " ====== ==========="
         << std::endl;
 
-    for ( int i = 0; i < 9; ++i ) {
+    for ( int i = 0; i < 10; ++i ) {
         out.unsetf(std::ios::right);
         out.setf(std::ios::left, std::ios::adjustfield);
         out << std::setw(8) << planets[i]->name();
@@ -79,18 +78,9 @@ void astro::show_planet_positions(std::ostream& out) {
             << std::endl;
     }
 
-    out.unsetf(std::ios::right);
-    out.setf(std::ios::left, std::ios::adjustfield);
-    out << std::setw(8) << moon.name();
-    out.unsetf(std::ios::left);
-    out.setf(std::ios::right, std::ios::adjustfield);
-    out << ": "
-        << rasc_string(moon.right_ascension()) << ", "
-        << decl_string(moon.declination()) << ", "
-        << std::setw(10) << moon.distance() << " "
-        << rasc_to_zodiac(moon.right_ascension()) << " "
-        << zodiac_sign(moon.right_ascension())
-        << std::endl;
+    std::cout << std::endl
+              << "* Distance for the moon given in Earth radii."
+              << std::endl;
 
     //  Set ios flags and precision back to original values
 

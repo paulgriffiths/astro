@@ -11,35 +11,30 @@
  */
 
 
-#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <string>
-
 #include <cmath>
 #include <cassert>
 #include <ctime>
-
 #include "astro_common_types.h"
 #include "astrofunc.h"
 
+using std::cos;
+using std::sin;
+using std::atan;
+using std::atan2;
+using std::fabs;
+using std::floor;
+using std::ceil;
+using std::pow;
+using std::sqrt;
+using std::time;
+using std::mktime;
+using std::gmtime;
+using std::difftime;
+
 using namespace astro;
-
-
-namespace {
-
-const char * const ZODIAC_SIGNS[] = {
-    "Aries", "Taurus", "Gemini", "Cancer",
-    "Leo", "Virgo", "Libra", "Scorpio",
-    "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-};
-
-const char * const ZODIAC_SIGNS_SHORT[] = {
-    "AR", "TA", "GE", "CN", "LE", "VI",
-    "LI", "SC", "SG", "CP", "AQ", "PI"
-};
-
-}           //  namespace
 
 
 /*
@@ -49,12 +44,15 @@ const char * const ZODIAC_SIGNS_SHORT[] = {
  */
 
 void astro::deg_to_hms(const double degrees, HMS& hmsout) {
+    static const double secs_in_a_day = 86400;
+    static const double secs_in_an_hour = 3600;
     const double norm_degs = normalize_degrees(degrees);
-    const int total_seconds = floor((norm_degs / 360) * 86400);
+    const int total_seconds = floor((norm_degs / 360) * secs_in_a_day);
 
-    hmsout.hours = total_seconds / 3600;
-    hmsout.minutes = (total_seconds - hmsout.hours * 3600) / 60;
-    hmsout.seconds = total_seconds - hmsout.hours * 3600 - hmsout.minutes * 60;
+    hmsout.hours = total_seconds / secs_in_an_hour;
+    hmsout.minutes = (total_seconds - hmsout.hours * secs_in_an_hour) / 60;
+    hmsout.seconds = total_seconds - hmsout.hours * secs_in_an_hour -
+                     hmsout.minutes * 60;
 
     assert(hmsout.hours >= 0);
     assert(hmsout.hours < 24);
@@ -72,12 +70,13 @@ void astro::deg_to_hms(const double degrees, HMS& hmsout) {
  */
 
 void astro::deg_to_dms(const double degrees, DMS& dmsout) {
-    const int total_seconds = degrees > 0 ? floor(degrees * 3600) :
-                                            ceil(degrees * 3600);
+    static const double secs_in_an_hour = 3600;
+    const int total_seconds = degrees > 0 ? floor(degrees * secs_in_an_hour) :
+                                            ceil(degrees * secs_in_an_hour);
 
-    dmsout.degrees = total_seconds / 3600;
-    dmsout.minutes = (total_seconds - dmsout.degrees * 3600) / 60;
-    dmsout.seconds = total_seconds - dmsout.degrees * 3600 -
+    dmsout.degrees = total_seconds / secs_in_an_hour;
+    dmsout.minutes = (total_seconds - dmsout.degrees * secs_in_an_hour) / 60;
+    dmsout.seconds = total_seconds - dmsout.degrees * secs_in_an_hour -
                                      dmsout.minutes * 60;
     
     assert(dmsout.minutes > -60);
@@ -103,6 +102,16 @@ double astro::hypot(const double opp, const double adj) {
  */
 
 void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
+    static const char * const zodiac_signs[] = {
+        "Aries", "Taurus", "Gemini", "Cancer",
+        "Leo", "Virgo", "Libra", "Scorpio",
+        "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    };
+    static const char * const zodiac_signs_short[] = {
+        "AR", "TA", "GE", "CN", "LE", "VI",
+        "LI", "SC", "SG", "CP", "AQ", "PI"
+    };
+
     const double norm_degs = normalize_degrees(rasc);
     DMS dms;
     deg_to_dms(norm_degs, dms);
@@ -113,8 +122,8 @@ void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
     assert(zInfo.sign_index >= 0);
     assert(zInfo.sign_index < 12);
 
-    zInfo.sign_name = ZODIAC_SIGNS[zInfo.sign_index];
-    zInfo.sign_short_name = ZODIAC_SIGNS_SHORT[zInfo.sign_index];
+    zInfo.sign_name = zodiac_signs[zInfo.sign_index];
+    zInfo.sign_short_name = zodiac_signs_short[zInfo.sign_index];
     zInfo.degrees = dms.degrees % 30;
 
     assert(zInfo.degrees >= 0);
@@ -136,6 +145,7 @@ void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
  */
 
 double astro::julian_date(tm * utc_time) {
+    static const double epoch_j2000 = 2451545;
     double seconds_since_j2000;
 
     if ( utc_time == 0 ) {
@@ -187,9 +197,16 @@ double astro::julian_date(tm * utc_time) {
 
     }
         
-    return EPOCH_J2000 + seconds_since_j2000 / 86400;
+    return epoch_j2000 + seconds_since_j2000 / 86400;
 }
 
+
+/*
+ *  Returns a tm struct containing the current UTC time if the
+ *  supplied argument is 0, or returns the provided argument with
+ *  the tm_isdst member zeroed out, in case the user omitted to
+ *  zero it (there is no concept of daylight savings time with UTC).
+ */
 
 tm astro::get_utc_tm(tm * utc_time) {
     if ( utc_time ) {
@@ -216,6 +233,10 @@ tm astro::get_utc_tm(tm * utc_time) {
 
 double astro::kepler(const double m_anom, const double ecc) {
     const double desired_accuracy = 1e-6;
+
+    assert(ecc >= 0);       // Eccentricity is 0 for a circle
+    assert(ecc < 1);        // Eccentricity is less than 1 for an ellipse
+
     double e_anom = m_anom;
     double diff;
 
@@ -253,6 +274,7 @@ const char * astro::zodiac_sign(const double rasc) {
     get_zodiac_info(rasc, zInfo);
     return zInfo.sign_name;
 }
+
 
 /*
  *  Returns a pointer to a C string representation of the

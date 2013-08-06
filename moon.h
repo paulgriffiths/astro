@@ -18,41 +18,36 @@
 #include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
-#include "base_planet.h"
+#include "planet.h"
 
 namespace astro {
 
-class MoonBase {
+class MoonBase : public Planet {
     public:
-        explicit MoonBase(const moon_planets moon_number, std::tm* ct) :
-            m_number(moon_number),
-            m_calc_time(get_utc_tm(ct)),
-            m_oes(calc_orbital_elements(ct)) {}
-        virtual ~MoonBase() {}
+        explicit MoonBase(std::tm* ct,
+                          OrbElem y2000_oes,
+                          OrbElem day_oes) :
+            Planet(ct, calc_orbital_elements(ct, y2000_oes, day_oes)) {}
+        virtual ~MoonBase() = 0;
 
-        virtual std::string name() const = 0;
-        OrbElem get_orbital_elements() const;
-        virtual RectCoords helio_orb_coords() const;
-        virtual RectCoords helio_ecl_coords() const;
         virtual RectCoords geo_ecl_coords() const;
-        virtual RectCoords geo_equ_coords() const;
-        double right_ascension() const;
-        double declination() const;
-        double distance() const;
 
     private:
-        const moon_planets m_number;
-        const tm m_calc_time;
-        const OrbElem m_oes;
-
-        OrbElem calc_orbital_elements(std::tm* calc_time) const;
+        OrbElem calc_orbital_elements(std::tm* calc_time,
+                                      const OrbElem& y2000_oes,
+                                      const OrbElem& day_oes) const;
 };
 
 class Moon : public MoonBase {
     public:
         explicit Moon(std::tm* ct) :
-            MoonBase(moon_moon, ct) {}
-        ~Moon() {}
+            MoonBase(ct,
+                     OrbElem(60.2666, 0.0549,
+                             5.1454, 198.5516,
+                             83.1862, 125.1228, 0, 0),
+                     OrbElem(0, 0,
+                             0, 13.1763964649,
+                             0.111403514, -0.0529538083, 0, 0)) {}
 
         virtual std::string name() const;
 };
@@ -60,8 +55,13 @@ class Moon : public MoonBase {
 class SunForMoon : public MoonBase {
     public:
         explicit SunForMoon(std::tm* ct) :
-            MoonBase(moon_sun, ct) {}
-        ~SunForMoon() {}
+            MoonBase(ct,
+                     OrbElem(1, 0.016709,
+                             0, 278.9874,
+                             -77.0596, 0, 0, 0),
+                     OrbElem(0, -0.000000001151,
+                             0, 0.98564735200,
+                             0.00004709350, 0, 0, 0)) {}
 
         virtual std::string name() const;
 };

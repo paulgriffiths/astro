@@ -14,7 +14,10 @@
 #ifndef PG_ASTRO_H
 #define PG_ASTRO_H
 
+#include "astro_common_types.h"
 #include "astrofunc.h"
+#include "planet.h"
+#include "major_body.h"
 #include "planets.h"
 #include "moon.h"
 #include "planet_func.h"

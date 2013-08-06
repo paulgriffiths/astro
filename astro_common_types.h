@@ -16,14 +16,6 @@
 
 namespace astro {
 
-enum planets {sun, mercury, venus, earth, mars,
-              jupiter, saturn, uranus, neptune, pluto, moon};
-
-enum moon_planets {moon_moon, moon_sun};
-
-enum zodiac {ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO,
-             LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES};
-
 struct ZodiacInfo {
     double right_ascension;
     int sign_index;
@@ -32,30 +24,47 @@ struct ZodiacInfo {
     int degrees;
     int minutes;
     int seconds;
+
+    ZodiacInfo() :
+        right_ascension(0), sign_index(0),
+        sign_name(0), sign_short_name(0),
+        degrees(0), minutes(0), seconds(0) {}
 };
 
 struct HMS {
     int hours;
     int minutes;
     int seconds;
+
+    HMS() :
+        hours(0), minutes(0), seconds(0) {}
 };
 
 struct DMS {
     int degrees;
     int minutes;
     int seconds;
+
+    DMS() :
+        degrees(0), minutes(0), seconds(0) {}
 };
 
 struct SphCoords {
     double right_ascension;
     double declination;
     double distance;
+
+    SphCoords() :
+        right_ascension(0), declination(0), distance(0) {}
 };
 
 struct RectCoords {
     double x;
     double y;
     double z;
+
+    RectCoords():
+        x(0), y(0), z(0) {}
 };
 
 struct OrbElem {
@@ -67,11 +76,18 @@ struct OrbElem {
     double lan;     // Longitude ascending node
     double man;     // Mean anomaly
     double arp;     // Argument of perihelion
+
+    OrbElem() :
+        sma(0), ecc(0), inc(0), ml(0),
+        lp(0), lan(0), man(0), arp(0) {}
+
+    OrbElem(const double sma, const double ecc,
+            const double inc, const double ml,
+            const double lp, const double lan,
+            const double man, const double arp) :
+        sma(sma), ecc(ecc), inc(inc), ml(ml),
+        lp(lp), lan(lan), man(man), arp(arp) {}
 };
-
-const double PI = 3.14159265358979323846;
-
-const double EPOCH_J2000 = 2451545;
 
 }           //  namespace astro
 

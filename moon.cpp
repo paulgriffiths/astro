@@ -11,62 +11,44 @@
  */
 
 
-#include <iostream>
-#include <iomanip>
 #include <string>
 #include <ctime>
 #include <cmath>
 #include "astro_common_types.h"
 #include "astrofunc.h"
-#include "base_planet.h"
+#include "planet.h"
 #include "moon.h"
 
 using std::cos;
 using std::sin;
+using std::atan2;
 using std::sqrt;
 using std::pow;
-using std::strftime;
 
 using namespace astro;
 
-namespace {
-
-//  Orbital elements for each planet at Y2000
-
-const OrbElem ELEMENTS_Y2000[] = {
-    {60.2666, 0.0549, 5.1454, 198.5516, 83.1862, 125.1228, 0, 0},   // Moon
-    {1, 0.016709, 0, 278.9874, -77.0596, 0, 0, 0}                   // Sun
-};
-
-const OrbElem ELEMENTS_DAY[] = {
-    {0, 0, 0, 13.1763964649, 0.111403514, -0.0529538083, 0, 0},
-    {0, -0.000000001151, 0, 0.98564735200, 0.00004709350, 0, 0, 0}
-};
-
-}           //  namespace
-
 
 /*
- *  Return the orbital elements.
+ *  Provide definition of pure virtual destructor.
  */
 
-OrbElem MoonBase::get_orbital_elements() const {
-    return m_oes;
-}
+MoonBase::~MoonBase() {}
 
 
 /*
  *  Returns orbital elements for the specified time.
  */
 
-OrbElem MoonBase::calc_orbital_elements(std::tm* calc_time) const {
+OrbElem MoonBase::calc_orbital_elements(std::tm* calc_time,
+                                        const OrbElem& y2000_oes,
+                                        const OrbElem& day_oes) const {
     double seconds_since_y2000;
 
     if ( calc_time == 0 ) {
 
         //  If no time was specified, just get the difference in
         //  seconds between the current UNIX timestamp, and the
-        //  UNIX timestamp at J2000.
+        //  UNIX timestamp at Y2000.
         //
         //  Note that this functionality does not appear to take
         //  leap seconds into account, and the number of seconds
@@ -75,7 +57,7 @@ OrbElem MoonBase::calc_orbital_elements(std::tm* calc_time) const {
         //  difference for the moon, as it orbits relatively
         //  quickly.
 
-        const time_t unix_epoch_y2000 = 946598400;
+        static const time_t unix_epoch_y2000 = 946598400;
         const time_t utc_t = time(0);
         seconds_since_y2000 = difftime(utc_t, unix_epoch_y2000);
 
@@ -117,64 +99,21 @@ OrbElem MoonBase::calc_orbital_elements(std::tm* calc_time) const {
         seconds_since_y2000 = difftime(utc_t, y2000_epoch);
     }
 
-    const double dys = seconds_since_y2000 / (60 * 60 * 24);
+    static const double secs_in_a_day = 86400;
+    const double days = seconds_since_y2000 / secs_in_a_day;
+
     OrbElem oes;
-    oes.sma = ELEMENTS_Y2000[m_number].sma +
-              ELEMENTS_DAY[m_number].sma * dys;
-    oes.ecc = ELEMENTS_Y2000[m_number].ecc +
-              ELEMENTS_DAY[m_number].ecc * dys;
-    oes.inc = radians(ELEMENTS_Y2000[m_number].inc +
-                      ELEMENTS_DAY[m_number].inc * dys);
-    oes.ml = radians(ELEMENTS_Y2000[m_number].ml +
-                     ELEMENTS_DAY[m_number].ml * dys);
-    oes.lp = radians(ELEMENTS_Y2000[m_number].lp +
-                     ELEMENTS_DAY[m_number].lp * dys);
-    oes.lan = radians(ELEMENTS_Y2000[m_number].lan +
-                      ELEMENTS_DAY[m_number].lan * dys);
+
+    oes.sma = y2000_oes.sma + day_oes.sma * days;
+    oes.ecc = y2000_oes.ecc + day_oes.ecc * days;
+    oes.inc = radians(y2000_oes.inc + day_oes.inc * days);
+    oes.ml = radians(y2000_oes.ml + day_oes.ml * days);
+    oes.lp = radians(y2000_oes.lp + day_oes.lp * days);
+    oes.lan = radians(y2000_oes.lan + day_oes.lan * days);
     oes.man = oes.ml - oes.lp;
     oes.arp = oes.lp - oes.lan;
 
     return oes;
-}
-
-
-/*
- *  Calculates the planet's heliocentric orbital coordinates.
- */
-
-RectCoords MoonBase::helio_orb_coords() const {
-    RectCoords hoc;
-
-    const double e_anom = kepler(m_oes.man, m_oes.ecc);
-
-    hoc.x = m_oes.sma * (cos(e_anom) - m_oes.ecc);
-    hoc.y = m_oes.sma * sqrt(1 - pow(m_oes.ecc, 2)) * sin(e_anom);
-    hoc.z = hypot(hoc.x, hoc.y);
-
-    return hoc;
-}
-
-
-/*
- *  Calculates the planet's heliocentric ecliptic coordinates.
- */
-
-RectCoords MoonBase::helio_ecl_coords() const {
-    const RectCoords hoc = helio_orb_coords();
-    RectCoords hec;
-
-    hec.x = (((cos(m_oes.arp) * cos(m_oes.lan) -
-               sin(m_oes.arp) * sin(m_oes.lan) * cos(m_oes.inc)) * hoc.x) +
-             ((-sin(m_oes.arp) * cos(m_oes.lan) -
-                cos(m_oes.arp) * sin(m_oes.lan) * cos(m_oes.inc)) * hoc.y));
-    hec.y = (((cos(m_oes.arp) * sin(m_oes.lan) +
-               sin(m_oes.arp) * cos(m_oes.lan) * cos(m_oes.inc)) * hoc.x) +
-             ((-sin(m_oes.arp) * sin(m_oes.lan) +
-                cos(m_oes.arp) * cos(m_oes.lan) * cos(m_oes.inc)) * hoc.y));
-    hec.z = ((sin(m_oes.arp) * sin(m_oes.inc) * hoc.x) +
-             (cos(m_oes.arp) * sin(m_oes.inc) * hoc.y));
-            
-    return hec;
 }
 
 
@@ -191,8 +130,9 @@ RectCoords MoonBase::geo_ecl_coords() const {
     double lat = atan2(hec.z, hypot(hec.x, hec.y));
     double rhc = hoc.z;
 
-    tm temp_tm = m_calc_time;
-    SunForMoon sfm(&temp_tm);
+    tm calc_time = get_calc_time();
+    SunForMoon sfm(&calc_time);
+    const OrbElem m_oes = get_orbital_elements();
     const OrbElem s_oes = sfm.get_orbital_elements();
 
     //  Calculate mean elongation and argument
@@ -242,60 +182,8 @@ RectCoords MoonBase::geo_ecl_coords() const {
 
 
 /*
- *  Calculates the planet's geocentric equatorial coordinates.
+ *  Provide name() functions.
  */
-
-RectCoords MoonBase::geo_equ_coords() const {
-    static const double obliquity = radians(23.43928);
-    const RectCoords hec = geo_ecl_coords();
-    RectCoords gec;
-
-    gec.x = hec.x;
-    gec.y = hec.y * cos(obliquity) - hec.z * sin(obliquity);
-    gec.z = hec.y * sin(obliquity) + hec.z * cos(obliquity);
-
-    return gec;
-}
-
-
-/*
- *  Calculates the planet's right ascension.
- */
-
-double MoonBase::right_ascension() const {
-    const RectCoords gqc = geo_equ_coords();
-    SphCoords sph;
-    rec_to_sph(gqc, sph);
-
-    return sph.right_ascension;
-}
-
-
-/*
- *  Calculates the planet's declination
- */
-
-double MoonBase::declination() const {
-    const RectCoords gqc = geo_equ_coords();
-    SphCoords sph;
-    rec_to_sph(gqc, sph);
-
-    return sph.declination;
-}
-
-
-/*
- *  Calculates the planet's distance
- */
-
-double MoonBase::distance() const {
-    const RectCoords gqc = geo_equ_coords();
-    SphCoords sph;
-    rec_to_sph(gqc, sph);
-
-    return sph.distance;
-}
-
 
 std::string Moon::name() const {
     return "Moon";

@@ -23,13 +23,11 @@ using namespace astro;
  */
 
 RectCoords Sun::helio_orb_coords() const {
-    const RectCoords hoc = {0, 0, 0};
-    return hoc;
+    return RectCoords();
 }
 
 RectCoords Sun::helio_ecl_coords() const {
-    const RectCoords hec = {0, 0, 0};
-    return hec;
+    return RectCoords();
 }
 
 
@@ -41,13 +39,11 @@ RectCoords Sun::helio_ecl_coords() const {
  */
 
 RectCoords Earth::geo_ecl_coords() const {
-    const RectCoords gec = {0, 0, 0};
-    return gec;
+    return RectCoords();
 }
 
 RectCoords Earth::geo_equ_coords() const {
-    const RectCoords gqc = {0, 0, 0};
-    return gqc;
+    return RectCoords();
 }
 
 

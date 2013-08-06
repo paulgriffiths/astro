@@ -18,7 +18,15 @@
 #include <cmath>
 #include "astro_common_types.h"
 
+
 namespace astro {
+
+/*
+ *  Constants
+ */
+
+const double PI = 3.14159265358979323846;
+
 
 /*
  *  Function prototypes
@@ -58,8 +66,8 @@ inline double normalize_degrees(const double angle) {
  *  Converts radians to degrees.
  */
 
-inline double degrees(const double radians) {
-    return radians / (PI / 180);
+inline double degrees(const double rads) {
+    return rads / (PI / 180);
 }
 
 
@@ -67,8 +75,8 @@ inline double degrees(const double radians) {
  *  Converts degrees to radians.
  */
 
-inline double radians(const double degrees) {
-    return degrees * (PI / 180);
+inline double radians(const double degs) {
+    return degs * (PI / 180);
 }
 
 }           //  namespace astro

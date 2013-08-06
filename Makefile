@@ -30,7 +30,7 @@ LD_TEST_FLAGS=-lCppUTest -lCppUTestExt
 MAINOBJ=main.o
 TESTMAINOBJ=tests/unittests.o
 
-OBJS=base_planet.o planets.o astrofunc.o planet_func.o moon.o
+OBJS=major_body.o planet.o planets.o astrofunc.o planet_func.o moon.o
 
 TESTOBJS=tests/test_julian_date.o
 TESTOBJS+=tests/test_kepler.o
@@ -114,19 +114,23 @@ testmain: $(TESTMAINOBJ) $(TESTOBJS) $(OBJS)
 main.o: main.cpp astro.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-base_planet.o: base_planet.cpp base_planet.h astrofunc.h
+major_body.o: major_body.cpp major_body.h astrofunc.h astro_common_types.h \
+		planets.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-planets.o: planets.cpp planets.h astrofunc.h
+planets.o: planets.cpp planets.h astro_common_types.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-moon.o: moon.cpp moon.h astrofunc.h
+planet.o: planet.cpp planet.h astro_common_types.h major_body.h astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-planet_func.o: planet_func.cpp planet_func.h astrofunc.h
+moon.o: moon.cpp moon.h astrofunc.h astro_common_types.h planet.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-astrofunc.o: astrofunc.cpp astrofunc.h
+planet_func.o: planet_func.cpp planet_func.h astrofunc.h moon.h planets.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+astrofunc.o: astrofunc.cpp astro_common_types.h astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 
