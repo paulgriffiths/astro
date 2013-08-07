@@ -431,7 +431,8 @@ time_t utctime::get_fuzzy_utc_timestamp(const tm* const local_tm) {
     //  jumped from 01:59 straight to 03:00.
 
     bool bad_hour = false;
-    if ( orig_local.tm_hour != local_tm_copy.tm_hour ) {
+    if ( orig_local.tm_hour != local_tm_copy.tm_hour ||
+         orig_local.tm_min != local_tm_copy.tm_min ) {
         bad_hour = true;
     }
 
@@ -535,12 +536,6 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  here. This is worst case 5 * 60 = 300 tests,
             //  so try not to live in a place like this.
 
-            //  I haven't been able to find a test case that
-            //  makes us end up here, so add a debug assertion
-            //  to make it real obvious if we ever do.
-
-            assert(false);
-
             tm before_last_hour_tm = last_hour_tm;
             tm_decrement_hour(&before_last_hour_tm);
 
@@ -550,8 +545,8 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             tm* hours[] = {&before_last_hour_tm, &last_hour_tm,
                            &local_tm, &next_hour_tm, &after_next_hour_tm};
             for ( int i = 0; i < 5 && error; ++i ) {
-                for ( int minute = 0; minute < 60 && error; ++minute ) {
-                    hours[i]->tm_min = minute;
+                for ( int min = 0; min < 60 && error; ++min ) {
+                    hours[i]->tm_min = min;
 
                     utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
                     if ( check_utc_timestamp(utc_maybe, year, month,
