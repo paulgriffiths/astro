@@ -482,7 +482,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
                                   const int day, const int hour,
                                   const int minute, const int second) {
 
-    //  Create a struct tm contained the desired UTC time.
+    //  Create a struct tm containing the desired UTC time.
 
     tm local_tm;
     local_tm.tm_sec = second;
@@ -528,13 +528,14 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         if ( error ) {
 
             //  We still don't have a match. This could happen if
-            //  the DST offset is not a whole number of hours. This
-            //  is pretty much a doomsday scenario, and the user is
-            //  going to pay for living in such a weird place, but
-            //  let's loop through each minute over the last and
-            //  next two hours to see if we can find the answer,
-            //  here. This is worst case 5 * 60 = 300 tests,
-            //  so try not to live in a place like this.
+            //  the DST offset is not a whole number of hours, or it
+            //  it's two hours, rather than one. This is pretty much
+            //  a doomsday scenario, and the user is going to pay for
+            //  living in such a weird place, but let's loop through
+            //  each minute over the last and next two hours to see if
+            //  we can find the answer, here. This is worst case
+            //  5 * 60 = 300 tests, so try not to live in a place like
+            //  this.
 
             tm before_last_hour_tm = last_hour_tm;
             tm_decrement_hour(&before_last_hour_tm);
