@@ -384,15 +384,45 @@ tm* utctime::tm_decrement_hour(tm * changing_tm) {
 time_t utctime::get_fuzzy_utc_timestamp(const tm* const local_tm) {
     tm local_tm_copy = *local_tm; 
     local_tm_copy.tm_isdst = -1;
+    
+    //  Make a copy of the copy, as we're going to need to check
+    //  if the hour changes after calling mktime()
+
+    tm orig_local = *local_tm;
+
+    //  Get a time_t for the local time corresponding to the UTC
+    //  time we're trying to find.
+
     time_t l_time = mktime(&local_tm_copy);
     if ( l_time == -1 ) {
         throw bad_time();
     }
 
+    //  Check if the hour has changed after calling mktime(). If it
+    //  has, then we're in the witching hour that DST has disappeared
+    //  from the world when the clocks went forward. We don't get
+    //  this problem when the clocks go back, since we might have
+    //  the same hour twice, but we don't have one missing. Our math
+    //  only gets thrown off by the witching hour. For instance,
+    //  02:00 UTC on March 3, 2013 existed, but 02:00 local time on
+    //  March 3, 2013 didn't exist in the eastern United States, we
+    //  jumped from 01:59 straight to 03:00.
+
+    bool bad_hour = false;
+    if ( orig_local.tm_hour != local_tm_copy.tm_hour ) {
+        bad_hour = true;
+    }
+
+    //  Get the UTC time corresponding to that same time_t so
+    //  we can calculate an approximate offset. 
+
     tm* ptm = gmtime(&l_time);
     if ( ptm == 0 ) {
         throw bad_time();
     }
+
+    //  Make another time_t with the UTC struct tm, to calculate
+    //  the difference.
 
     tm utc_tm = *ptm;
     utc_tm.tm_isdst = local_tm_copy.tm_isdst;
@@ -401,7 +431,19 @@ time_t utctime::get_fuzzy_utc_timestamp(const tm* const local_tm) {
         throw bad_time();
     }
     
+    //  Finally, we can calculate the difference.
+
     time_t utc_offset = l_time - utc_wrong_way;
+
+    //  Remove an hour from the offset if we tried to
+    //  enter the witching hour.
+
+    if ( bad_hour ) {
+        utc_offset -= get_day_diff() / 24;
+    }
+
+    //  Fingers crossed!
+
     return (l_time + utc_offset);
 }
 
