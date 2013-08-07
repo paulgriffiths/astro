@@ -31,6 +31,7 @@ MAINOBJ=main.o
 TESTMAINOBJ=tests/unittests.o
 
 OBJS=major_body.o planet.o planets.o astrofunc.o planet_func.o moon.o
+OBJS+=utc_time.o
 
 TESTOBJS=tests/test_julian_date.o
 TESTOBJS+=tests/test_kepler.o
@@ -40,6 +41,8 @@ TESTOBJS+=tests/test_zodiac_sign.o
 TESTOBJS+=tests/test_zodiac_sign_short.o
 TESTOBJS+=tests/test_planets.o
 TESTOBJS+=tests/test_moon.o
+TESTOBJS+=tests/test_tm_decrement_hour.o
+TESTOBJS+=tests/test_tm_increment_hour.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -133,6 +136,9 @@ planet_func.o: planet_func.cpp planet_func.h astrofunc.h moon.h planets.h
 astrofunc.o: astrofunc.cpp astro_common_types.h astrofunc.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+utc_time.o: utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
 
 # Unit tests
 
@@ -169,5 +175,13 @@ tests/test_planets.o: tests/test_planets.cpp \
 
 tests/test_moon.o: tests/test_moon.cpp \
 	astrofunc.cpp astrofunc.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_tm_decrement_hour.o: tests/test_tm_decrement_hour.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_tm_increment_hour.o: tests/test_tm_increment_hour.cpp \
+	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
