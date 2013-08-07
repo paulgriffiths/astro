@@ -518,7 +518,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  going to pay for living in such a weird place, but
             //  let's loop through each minute to see if we can find
             //  the answer, here. This is worst case 3 * 24 * 60 =
-            //  4,320 tests.
+            //  4,320 tests, so try not to live in a place like this.
 
             //  We need struct tms for yesterday, today, and tomorrow,
             //  and we need to get a time_t value corresponding to a
@@ -548,15 +548,11 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
             //  Since time_t doesn't have to be an integral value,
             //  and possibly because of leap seconds or some other
-            //  weirdness, it's conceivable that the seconds and
-            //  maybe the minutes in our new struct tms might differ
-            //  from the original input, so let's reset them just
-            //  to be on the safe side.
+            //  weirdness, it's conceivable that the seconds might
+            //  differ from the original input, so let's reset them
+            //  just to be on the safe side.
 
-            yesterday_tm.tm_min = minute;
             yesterday_tm.tm_sec = second;
-
-            tomorrow_tm.tm_min = minute;
             tomorrow_tm.tm_sec = second;
 
             //  Now loop through all the minutes in each of the
@@ -580,13 +576,15 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
             if ( error ) {
 
-                //  Well, we tried. We can't find it, so thrown an
+                //  Well, we tried. We can't find it, so throw an
                 //  exception.
 
                 throw bad_time_init();
             }
         }
     }
+
+    //  Getting here is nice.
 
     time_t utc_definitely = utc_maybe;
     return utc_definitely;
