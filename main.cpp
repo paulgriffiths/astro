@@ -10,7 +10,6 @@
  *  http://www.gnu.org/licenses/
  */
 
-#include <iostream>
 #include "astro.h"
 
 int main(void) {

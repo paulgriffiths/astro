@@ -16,7 +16,6 @@
 #include <string>
 #include <cmath>
 #include <cassert>
-#include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "utc_time.h"
@@ -30,10 +29,6 @@ using std::floor;
 using std::ceil;
 using std::pow;
 using std::sqrt;
-using std::time;
-using std::mktime;
-using std::gmtime;
-using std::difftime;
 
 using namespace astro;
 
@@ -154,25 +149,6 @@ double astro::julian_date(const utctime::UTCTime& utc_time) {
     const double seconds_since_j2000 = difftime(utc_time.timestamp(),
                                                 ts_epoch_j2000);
     return epoch_j2000 + seconds_since_j2000 / secs_in_a_day;
-}
-
-
-/*
- *  Returns a tm struct containing the current UTC time if the
- *  supplied argument is 0, or returns the provided argument with
- *  the tm_isdst member zeroed out, in case the user omitted to
- *  zero it (there is no concept of daylight savings time with UTC).
- */
-
-tm astro::get_utc_tm(tm * utc_time) {
-    if ( utc_time ) {
-        (*utc_time).tm_isdst = 0;
-        return *utc_time;
-    }
-
-    time_t cal_time = time(0);
-    tm * ut_tm = gmtime(&cal_time);
-    return *ut_tm;
 }
 
 

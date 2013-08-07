@@ -38,7 +38,6 @@ void deg_to_dms(const double degrees, DMS& dmsout);
 double hypot(const double opp, const double adj);
 void get_zodiac_info(const double rasc, ZodiacInfo& zInfo);
 double julian_date(const utctime::UTCTime& utc_time);
-tm get_utc_tm(tm * utc_time);
 double kepler(const double m_anom, const double ecc);
 void rec_to_sph(const RectCoords& rcd, SphCoords& scd);
 const char * zodiac_sign(const double rasc);

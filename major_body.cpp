@@ -12,7 +12,6 @@
  */
 
 
-#include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "major_body.h"
