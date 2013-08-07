@@ -59,6 +59,8 @@ time_t get_day_diff();
 bool is_leap_year(const int year);
 tm * tm_decrement_hour(tm * changing_tm);
 tm * tm_increment_hour(tm * changing_tm);
+tm * tm_decrement_day(tm * changing_tm);
+tm * tm_increment_day(tm * changing_tm);
 time_t get_fuzzy_utc_timestamp(const tm* const local_tm);
 bool check_utc_timestamp(const time_t check_time,
                          const int year, const int month,

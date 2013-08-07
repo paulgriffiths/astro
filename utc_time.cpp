@@ -212,6 +212,63 @@ bool utctime::is_leap_year(const int year) {
 
 
 /*
+ *  Adds a day to a supplied tm struct.
+ */
+
+tm* utctime::tm_increment_day(tm * changing_tm) {
+    changing_tm->tm_mday += 1;
+    switch ( changing_tm->tm_mon ) {
+        case 0:
+        case 2:
+        case 4:
+        case 6:
+        case 7:
+        case 9:
+            if ( changing_tm->tm_mday > 31 ) {
+                changing_tm->tm_mday = 1;
+                changing_tm->tm_mon += 1;
+            }
+            break;
+
+        case 11:
+            if ( changing_tm->tm_mday > 31 ) {
+                changing_tm->tm_mday = 1;
+                changing_tm->tm_mon = 0;
+                changing_tm->tm_year += 1;
+            }
+            break;
+
+        case 3:
+        case 5:
+        case 8:
+        case 10:
+            if ( changing_tm->tm_mday > 30 ) {
+                changing_tm->tm_mday = 1;
+                changing_tm->tm_mon +=1;
+            }
+            break;
+
+        case 1:
+            if ( changing_tm->tm_mday > 29 ) {
+                changing_tm->tm_mday = 1;
+                changing_tm->tm_mon += 1;
+            } else if ( changing_tm->tm_mday > 28 &&
+                        !is_leap_year(changing_tm->tm_year) ) {
+                changing_tm->tm_mday = 1;
+                changing_tm->tm_mon += 1;
+            }
+            break;
+
+        default:
+            assert(false);
+            break;
+    }
+
+    return changing_tm;
+}
+
+
+/*
  *  Adds an hour to a supplied tm struct.
  */
 
@@ -220,47 +277,53 @@ tm* utctime::tm_increment_hour(tm * changing_tm) {
         changing_tm->tm_hour += 1;
     } else {
         changing_tm->tm_hour = 0;
-        changing_tm->tm_mday += 1;
+        tm_increment_day(changing_tm);
+    }
+
+    return changing_tm;
+}
+
+
+/*
+ *  Deducts a day from a supplied tm struct.
+ */
+
+tm* utctime::tm_decrement_day(tm * changing_tm) {
+    if ( changing_tm->tm_mday > 1 ) {
+        changing_tm->tm_mday -= 1;
+    } else {
         switch ( changing_tm->tm_mon ) {
             case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 7:
-            case 9:
-                if ( changing_tm->tm_mday > 31 ) {
-                    changing_tm->tm_mday = 1;
-                    changing_tm->tm_mon += 1;
-                }
-                break;
-
-            case 11:
-                if ( changing_tm->tm_mday > 31 ) {
-                    changing_tm->tm_mday = 1;
-                    changing_tm->tm_mon = 0;
-                    changing_tm->tm_year += 1;
-                }
-                break;
-
-            case 3:
-            case 5:
-            case 8:
-            case 10:
-                if ( changing_tm->tm_mday > 30 ) {
-                    changing_tm->tm_mday = 1;
-                    changing_tm->tm_mon +=1;
-                }
+                changing_tm->tm_mday = 31;
+                changing_tm->tm_mon = 11;
+                changing_tm->tm_year -= 1;
                 break;
 
             case 1:
-                if ( changing_tm->tm_mday > 29 ) {
-                    changing_tm->tm_mday = 1;
-                    changing_tm->tm_mon += 1;
-                } else if ( changing_tm->tm_mday > 28 &&
-                            !is_leap_year(changing_tm->tm_year) ) {
-                    changing_tm->tm_mday = 1;
-                    changing_tm->tm_mon += 1;
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+                changing_tm->tm_mday = 31;
+                changing_tm->tm_mon -= 1;
+                break;
+
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                changing_tm->tm_mday = 30;
+                changing_tm->tm_mon -= 1;
+                break;
+
+            case 2:
+                if ( is_leap_year(changing_tm->tm_year) ) {
+                    changing_tm->tm_mday = 29;
+                } else {
+                    changing_tm->tm_mday = 28;
                 }
+                changing_tm->tm_mon -= 1;
                 break;
 
             default:
@@ -282,48 +345,7 @@ tm* utctime::tm_decrement_hour(tm * changing_tm) {
         changing_tm->tm_hour -= 1;
     } else {
         changing_tm->tm_hour = 23;
-        if ( changing_tm->tm_mday > 1 ) {
-            changing_tm->tm_mday -= 1;
-        } else {
-            switch ( changing_tm->tm_mon ) {
-                case 0:
-                    changing_tm->tm_mday = 31;
-                    changing_tm->tm_mon = 11;
-                    changing_tm->tm_year -= 1;
-                    break;
-
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                case 8:
-                case 10:
-                    changing_tm->tm_mday = 31;
-                    changing_tm->tm_mon -= 1;
-                    break;
-
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                    changing_tm->tm_mday = 30;
-                    changing_tm->tm_mon -= 1;
-                    break;
-
-                case 2:
-                    if ( is_leap_year(changing_tm->tm_year) ) {
-                        changing_tm->tm_mday = 29;
-                    } else {
-                        changing_tm->tm_mday = 28;
-                    }
-                    changing_tm->tm_mon -= 1;
-                    break;
-
-                default:
-                    assert(false);
-                    break;
-            }
-        }
+        tm_decrement_day(changing_tm);
     }
 
     return changing_tm;
@@ -519,41 +541,19 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  let's loop through each minute to see if we can find
             //  the answer, here. This is worst case 3 * 24 * 60 =
             //  4,320 tests, so try not to live in a place like this.
+            //
+            //  Note: there may be some more efficient intermediate
+            //  tests before jumping straight into checking 4,320
+            //  minutes, but it should be pretty rare to get here.
 
-            //  We need struct tms for yesterday, today, and tomorrow,
-            //  and we need to get a time_t value corresponding to a
-            //  single day in order to do it.
-
-            time_t day_t_diff = get_day_diff();
+            //  We need struct tms for yesterday, today, and tomorrow.
 
             tm today_tm = local_tm;
-            time_t today_time = mktime(&today_tm);
-            if ( today_time == -1 ) {
-                throw bad_time();
-            }
+            tm yesterday_tm = today_tm;
+            tm_decrement_day(&yesterday_tm);
 
-            time_t yes_time = today_time - day_t_diff;
-            tm* ptm = localtime(&yes_time);
-            if ( ptm == 0 ) {
-                throw bad_time();
-            }
-            tm yesterday_tm = *ptm;
-
-            time_t tom_time = today_time + day_t_diff;
-            ptm = localtime(&tom_time);
-            if ( ptm == 0 ) {
-                throw bad_time();
-            }
-            tm tomorrow_tm = *ptm;
-
-            //  Since time_t doesn't have to be an integral value,
-            //  and possibly because of leap seconds or some other
-            //  weirdness, it's conceivable that the seconds might
-            //  differ from the original input, so let's reset them
-            //  just to be on the safe side.
-
-            yesterday_tm.tm_sec = second;
-            tomorrow_tm.tm_sec = second;
+            tm tomorrow_tm = local_tm;
+            tm_increment_day(&tomorrow_tm);
 
             //  Now loop through all the minutes in each of the
             //  24 hours in each of the 3 days.
