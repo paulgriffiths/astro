@@ -43,6 +43,8 @@ TESTOBJS+=tests/test_planets.o
 TESTOBJS+=tests/test_moon.o
 TESTOBJS+=tests/test_tm_decrement_hour.o
 TESTOBJS+=tests/test_tm_increment_hour.o
+TESTOBJS+=tests/test_is_leap_year.o
+TESTOBJS+=tests/test_get_utc_timestamp.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -182,6 +184,14 @@ tests/test_tm_decrement_hour.o: tests/test_tm_decrement_hour.cpp \
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 tests/test_tm_increment_hour.o: tests/test_tm_increment_hour.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_is_leap_year.o: tests/test_is_leap_year.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_get_utc_timestamp.o: tests/test_get_utc_timestamp.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
