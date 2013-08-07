@@ -15,7 +15,6 @@
 #define PG_ASTRO_PLANET_H
 
 #include <string>
-#include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "utc_time.h"

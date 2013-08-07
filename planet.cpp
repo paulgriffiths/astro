@@ -23,7 +23,6 @@ using std::cos;
 using std::sin;
 using std::sqrt;
 using std::pow;
-using std::strftime;
 
 using namespace astro;
 
