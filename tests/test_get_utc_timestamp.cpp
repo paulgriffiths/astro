@@ -31,7 +31,7 @@ TEST_GROUP(GetUTCTimestampGroup) {
  *  day. Running this test may not be as meaningful in a location
  *  where DST did not begin on that day.
  */
-/*
+
 TEST(GetUTCTimestampGroup, GetTimeStamp1Test) {
     const int year = 2013;
     const int month = 3;
@@ -47,7 +47,7 @@ TEST(GetUTCTimestampGroup, GetTimeStamp1Test) {
         }
     }
 }
-*/
+
 
 /*
  *  Check the day before, too.
