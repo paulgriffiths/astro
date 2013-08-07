@@ -18,12 +18,13 @@
 #include <ctime>
 #include "astro_common_types.h"
 #include "planet.h"
+#include "utc_time.h"
 
 namespace astro {
 
 class MajorBody : public Planet {
     public:
-        explicit MajorBody(std::tm* ct,
+        explicit MajorBody(const utctime::UTCTime& ct,
                            OrbElem j2000_oes,
                            OrbElem century_oes) :
             Planet(ct, calc_orbital_elements(ct, j2000_oes, century_oes)) {}
@@ -32,7 +33,7 @@ class MajorBody : public Planet {
         virtual RectCoords geo_ecl_coords() const;
 
     private:
-        OrbElem calc_orbital_elements(std::tm* calc_time,
+        OrbElem calc_orbital_elements(const utctime::UTCTime& ct,
                                       const OrbElem& j2000_oes,
                                       const OrbElem& century_oes) const;
 };

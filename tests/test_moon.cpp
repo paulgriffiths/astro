@@ -21,6 +21,7 @@
 
 #include <CppUTest/CommandLineTestRunner.h>
 #include "../astro.h"
+#include "../utc_time.h"
 
 using namespace astro;
 
@@ -30,7 +31,7 @@ TEST_GROUP(MoonGroup) {
 
 
 /*
- *  Tests position of the Moon for August 10, 1998, 00:00 UTC
+ *  Tests position of the Moon for August 10, 1988, 00:00 UTC
  *
  *  Note: distance is not assessed in this test, as it is returned
  *  in earth radii rather than astronomical units, and no reliable
@@ -43,15 +44,7 @@ TEST(MoonGroup, MoonTest) {
     const double ra_accuracy = 0.3;
     const double de_accuracy = 0.1;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 0;
-    test_time.tm_mday = 10;
-    test_time.tm_mon = 7;
-    test_time.tm_year = 88;
-
-    Moon moon(&test_time);
+    Moon moon(utctime::UTCTime(1988, 8, 10, 0, 0, 0));
     rec_to_sph(moon.geo_equ_coords(), cds);
 
     expected_result = 112.130708333333;

@@ -19,12 +19,13 @@
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "planet.h"
+#include "utc_time.h"
 
 namespace astro {
 
 class MoonBase : public Planet {
     public:
-        explicit MoonBase(std::tm* ct,
+        explicit MoonBase(const utctime::UTCTime& ct,
                           OrbElem y2000_oes,
                           OrbElem day_oes) :
             Planet(ct, calc_orbital_elements(ct, y2000_oes, day_oes)) {}
@@ -33,14 +34,14 @@ class MoonBase : public Planet {
         virtual RectCoords geo_ecl_coords() const;
 
     private:
-        OrbElem calc_orbital_elements(std::tm* calc_time,
+        OrbElem calc_orbital_elements(const utctime::UTCTime& calc_time,
                                       const OrbElem& y2000_oes,
                                       const OrbElem& day_oes) const;
 };
 
 class Moon : public MoonBase {
     public:
-        explicit Moon(std::tm* ct) :
+        explicit Moon(const utctime::UTCTime ct) :
             MoonBase(ct,
                      OrbElem(60.2666, 0.0549,
                              5.1454, 198.5516,
@@ -54,7 +55,7 @@ class Moon : public MoonBase {
 
 class SunForMoon : public MoonBase {
     public:
-        explicit SunForMoon(std::tm* ct) :
+        explicit SunForMoon(const utctime::UTCTime ct) :
             MoonBase(ct,
                      OrbElem(1, 0.016709,
                              0, 278.9874,

@@ -22,6 +22,7 @@
 #include <CppUTest/CommandLineTestRunner.h>
 #include <ctime>
 #include "../astrofunc.h"
+#include "../utc_time.h"
 
 using namespace astro;
 
@@ -35,16 +36,7 @@ TEST_GROUP(JulianDateGroup) {
  */
 
 TEST(JulianDateGroup, FirstDateTest) {
-    tm test_time_tm;
-    test_time_tm.tm_sec = 0;
-    test_time_tm.tm_min = 0;
-    test_time_tm.tm_hour = 0;
-    test_time_tm.tm_mday = 2;
-    test_time_tm.tm_mon = 5;
-    test_time_tm.tm_year = 113;
-    test_time_tm.tm_isdst = 142;        // julian_date() should zero this
-
-    double jdate = julian_date(&test_time_tm);
+    double jdate = julian_date(utctime::UTCTime(2013, 6, 2, 0 ,0 , 0));
     double accuracy = 0.000001;
 
     DOUBLES_EQUAL(2456445.5, jdate, accuracy);
@@ -56,16 +48,7 @@ TEST(JulianDateGroup, FirstDateTest) {
  */
 
 TEST(JulianDateGroup, SecondDateTest) {
-    tm test_time_tm;
-    test_time_tm.tm_sec = 0;
-    test_time_tm.tm_min = 0;
-    test_time_tm.tm_hour = 0;
-    test_time_tm.tm_mday = 1;
-    test_time_tm.tm_mon = 0;
-    test_time_tm.tm_year = 80;
-    test_time_tm.tm_isdst = -368;       // julian_date() should zero this
-
-    double jdate = julian_date(&test_time_tm);
+    double jdate = julian_date(utctime::UTCTime(1980, 1, 1, 0, 0, 0));
     double accuracy = 0.000001;
 
     DOUBLES_EQUAL(2444239.5, jdate, accuracy);
@@ -77,16 +60,7 @@ TEST(JulianDateGroup, SecondDateTest) {
  */
 
 TEST(JulianDateGroup, ThirdDateTest) {
-    tm test_time_tm;
-    test_time_tm.tm_sec = 0;
-    test_time_tm.tm_min = 11;
-    test_time_tm.tm_hour = 11;
-    test_time_tm.tm_mday = 11;
-    test_time_tm.tm_mon = 10;
-    test_time_tm.tm_year = 18;
-    test_time_tm.tm_isdst = 0;          // julian_date() should zero this
-
-    double jdate = julian_date(&test_time_tm);
+    double jdate = julian_date(utctime::UTCTime(1918, 11, 11, 11, 11, 0));
     double accuracy = 0.001;
 
     DOUBLES_EQUAL(2421908.9661, jdate, accuracy);

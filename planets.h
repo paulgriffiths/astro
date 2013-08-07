@@ -18,12 +18,13 @@
 #include <ctime>
 #include "astro_common_types.h"
 #include "major_body.h"
+#include "utc_time.h"
 
 namespace astro {
 
 class Sun: public MajorBody {
     public:
-        explicit Sun(std::tm* ct) :
+        explicit Sun(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(0, 0, 0, 0, 0, 0, 0, 0),
                       OrbElem(0, 0, 0, 0, 0, 0, 0, 0)) {};
@@ -35,7 +36,7 @@ class Sun: public MajorBody {
 
 class Mercury: public MajorBody {
     public:
-        explicit Mercury(std::tm* ct) :
+        explicit Mercury(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(0.387009927, 0.20563593,
                               7.00497902, 252.25032350,
@@ -49,7 +50,7 @@ class Mercury: public MajorBody {
 
 class Venus: public MajorBody {
     public:
-        explicit Venus(std::tm* ct) :
+        explicit Venus(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(0.72333566, 0.00677672,
                               3.39467605, 181.97909950,
@@ -63,7 +64,7 @@ class Venus: public MajorBody {
 
 class Earth: public MajorBody {
     public:
-        explicit Earth(std::tm* ct) :
+        explicit Earth(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(1.00000261, 0.01671123,
                               -0.00001531, 100.46457166,
@@ -80,7 +81,7 @@ class Earth: public MajorBody {
 
 class Mars: public MajorBody {
     public:
-        explicit Mars(std::tm* ct) :
+        explicit Mars(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(1.52371034, 0.09339410,
                               1.84969142, -4.55343205,
@@ -94,7 +95,7 @@ class Mars: public MajorBody {
 
 class Jupiter: public MajorBody {
     public:
-        explicit Jupiter(std::tm* ct) :
+        explicit Jupiter(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(5.20288700, 0.04838624,
                               1.30439695, 34.39644051,
@@ -108,7 +109,7 @@ class Jupiter: public MajorBody {
 
 class Saturn: public MajorBody {
     public:
-        explicit Saturn(std::tm* ct) :
+        explicit Saturn(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(9.53667594, 0.05386179,
                               2.48599187, 49.95424423,
@@ -122,7 +123,7 @@ class Saturn: public MajorBody {
 
 class Uranus: public MajorBody {
     public:
-        explicit Uranus(std::tm* ct) :
+        explicit Uranus(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(19.18916464, 0.04725744,
                               0.77263783, 313.23810451,
@@ -136,7 +137,7 @@ class Uranus: public MajorBody {
 
 class Neptune: public MajorBody {
     public:
-        explicit Neptune(std::tm* ct) :
+        explicit Neptune(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(30.06992276, 0.00859048,
                               1.77004347, -55.12002969,
@@ -150,7 +151,7 @@ class Neptune: public MajorBody {
 
 class Pluto: public MajorBody {
     public:
-        explicit Pluto(std::tm* ct) :
+        explicit Pluto(const utctime::UTCTime& ct) :
             MajorBody(ct,
                       OrbElem(39.48211675, 0.24882730,
                               17.14001206, 238.92903833,

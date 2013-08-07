@@ -19,6 +19,7 @@
 #include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
+#include "utc_time.h"
 
 using std::cos;
 using std::sin;
@@ -144,60 +145,15 @@ void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
  *  mktime() will interpret it as local time.
  */
 
-double astro::julian_date(tm * utc_time) {
+double astro::julian_date(const utctime::UTCTime& utc_time) {
     static const double epoch_j2000 = 2451545;
-    double seconds_since_j2000;
-
-    if ( utc_time == 0 ) {
-
-        //  If no time was specified, just get the difference in
-        //  seconds between the current UNIX timestamp, and the
-        //  UNIX timestamp at J2000.
-
-        const time_t unix_epoch_j2000 = 946728000;
-        const time_t utc_t = time(0);
-        seconds_since_j2000 = difftime(utc_t, unix_epoch_j2000);
-
-    } else {
-
-        //  If a time was specified, we're interpreting it as UTC,
-        //  so we have some work to do.
-
-        //  First calculate the UNIX timestamp for Jan 1, 2000, 12:00pm,
-        //  as if the current system were on GMT. Make sure we ignore
-        //  DST, although it'll be off on Jan 1 anyway.
-
-        tm j2000_epoch_tm;
-        j2000_epoch_tm.tm_sec = 0;
-        j2000_epoch_tm.tm_min = 0;
-        j2000_epoch_tm.tm_hour = 12;
-        j2000_epoch_tm.tm_mday = 1;
-        j2000_epoch_tm.tm_mon = 0;
-        j2000_epoch_tm.tm_year = 100;
-        j2000_epoch_tm.tm_isdst = 0;
-        const time_t j2000_epoch = mktime(&j2000_epoch_tm);
-
-        //  Then get the UNIX timestamp for the specified time, again
-        //  as if the current system were on GMT. This time we really
-        //  do need to be sure we're ignoring DST, as UTC has no
-        //  concept of it and the date specified might be during the
-        //  summer.
-        //
-        //  Note that this assumes that, after ignoring DST, there is
-        //  no difference between local time and UTC except a constant
-        //  time offset.
-
-        tm calc_time = *utc_time;
-        calc_time.tm_isdst = 0;
-        const time_t utc_t = mktime(&calc_time);
-
-        //  Then calculate the difference between the two times.
-
-        seconds_since_j2000 = difftime(utc_t, j2000_epoch);
-
-    }
+    static const double secs_in_a_day = 86400;
+    static const time_t ts_epoch_j2000 = utctime::get_utc_timestamp(2000,
+                                           1, 1, 12, 0, 0);
         
-    return epoch_j2000 + seconds_since_j2000 / 86400;
+    const double seconds_since_j2000 = difftime(utc_time.timestamp(),
+                                                ts_epoch_j2000);
+    return epoch_j2000 + seconds_since_j2000 / secs_in_a_day;
 }
 
 

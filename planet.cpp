@@ -18,6 +18,7 @@
 #include "astrofunc.h"
 #include "major_body.h"
 #include "planets.h"
+#include "utc_time.h"
 
 using std::cos;
 using std::sin;
@@ -39,7 +40,7 @@ Planet::~Planet() {}
  *  Returns a tm struct of the calculation time
  */
 
-const tm& Planet::get_calc_time() const {
+const utctime::UTCTime& Planet::get_calc_time() const {
     return m_calc_time;
 }
 
@@ -49,9 +50,7 @@ const tm& Planet::get_calc_time() const {
  */
 
 std::string Planet::calc_time_string() const {
-    char tstring[100];
-    strftime(tstring, 1000, "%B %d, %Y %H:%M:%S UTC", &m_calc_time);
-    return tstring;
+    return m_calc_time.time_string();
 }
 
 

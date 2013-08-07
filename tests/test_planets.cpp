@@ -21,6 +21,7 @@
 
 #include <CppUTest/CommandLineTestRunner.h>
 #include "../astro.h"
+#include "../utc_time.h"
 
 using namespace astro;
 
@@ -40,15 +41,7 @@ TEST(PlanetsGroup, MercuryTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.0001;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 23;
-    test_time.tm_hour = 20;
-    test_time.tm_mday = 5;
-    test_time.tm_mon = 4;
-    test_time.tm_year = 80;
-
-    Mercury mercury(&test_time);
+    Mercury mercury(utctime::UTCTime(1980, 5, 5, 20, 23, 0));
     rec_to_sph(mercury.geo_equ_coords(), cds);
 
     expected_result = 35.0765;
@@ -76,15 +69,7 @@ TEST(PlanetsGroup, VenusTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.001;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 30;
-    test_time.tm_hour = 8;
-    test_time.tm_mday = 14;
-    test_time.tm_mon = 5;
-    test_time.tm_year = 82;
-
-    Venus venus(&test_time);
+    Venus venus(utctime::UTCTime(1982, 6, 14, 8, 30, 0));
     rec_to_sph(venus.geo_equ_coords(), cds);
 
     expected_result = 45.2389583333333;
@@ -112,15 +97,7 @@ TEST(PlanetsGroup, MarsTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.0001;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 0;
-    test_time.tm_mday = 21;
-    test_time.tm_mon = 5;
-    test_time.tm_year = 97;
-
-    Mars mars(&test_time);
+    Mars mars(utctime::UTCTime(1997, 6, 21, 0, 0, 0));
     rec_to_sph(mars.geo_equ_coords(), cds);
 
     expected_result = 180.840541666667;
@@ -148,15 +125,7 @@ TEST(PlanetsGroup, JupiterTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.01;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 0;
-    test_time.tm_mday = 17;
-    test_time.tm_mon = 5;
-    test_time.tm_year = 91;
-
-    Jupiter jupiter(&test_time);
+    Jupiter jupiter(utctime::UTCTime(1991, 6, 17, 0, 0, 0));
     rec_to_sph(jupiter.geo_equ_coords(), cds);
 
     expected_result = 134.511875;
@@ -184,15 +153,7 @@ TEST(PlanetsGroup, SaturnTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.01;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 12;
-    test_time.tm_mday = 1;
-    test_time.tm_mon = 11;
-    test_time.tm_year = 47;
-
-    Saturn saturn(&test_time);
+    Saturn saturn(utctime::UTCTime(1947, 12, 1, 12, 0, 0));
     rec_to_sph(saturn.geo_equ_coords(), cds);
 
     expected_result = 146.079125;
@@ -220,15 +181,7 @@ TEST(PlanetsGroup, UranusTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.01;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 8;
-    test_time.tm_mday = 31;
-    test_time.tm_mon = 9;
-    test_time.tm_year = 75;
-
-    Uranus uranus(&test_time);
+    Uranus uranus(utctime::UTCTime(1975, 10, 31, 8, 0, 0));
     rec_to_sph(uranus.geo_equ_coords(), cds);
 
     expected_result = 211.38025;
@@ -256,15 +209,7 @@ TEST(PlanetsGroup, NeptuneTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.01;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 9;
-    test_time.tm_mday = 15;
-    test_time.tm_mon = 8;
-    test_time.tm_year = 66;
-
-    Neptune neptune(&test_time);
+    Neptune neptune(utctime::UTCTime(1966, 9, 15, 9, 0, 0));
     rec_to_sph(neptune.geo_equ_coords(), cds);
 
     expected_result = 228.44925;
@@ -292,15 +237,7 @@ TEST(PlanetsGroup, PlutoTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.01;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 0;
-    test_time.tm_hour = 14;
-    test_time.tm_mday = 11;
-    test_time.tm_mon = 8;
-    test_time.tm_year = 101;
-
-    Pluto pluto(&test_time);
+    Pluto pluto(utctime::UTCTime(2001, 9, 11, 14, 0, 0));
     rec_to_sph(pluto.geo_equ_coords(), cds);
 
     expected_result = 252.494583333333;
@@ -328,15 +265,7 @@ TEST(PlanetsGroup, SunTest) {
     const double de_accuracy = 0.01;
     const double di_accuracy = 0.0001;
 
-    tm test_time;
-    test_time.tm_sec = 0;
-    test_time.tm_min = 15;
-    test_time.tm_hour = 1;
-    test_time.tm_mday = 4;
-    test_time.tm_mon = 5;
-    test_time.tm_year = 113;
-
-    Sun sun(&test_time);
+    Sun sun(utctime::UTCTime(2013, 6, 4, 1, 15, 0));
     rec_to_sph(sun.geo_equ_coords(), cds);
 
     expected_result = 72.0135416666667;

@@ -39,66 +39,13 @@ MoonBase::~MoonBase() {}
  *  Returns orbital elements for the specified time.
  */
 
-OrbElem MoonBase::calc_orbital_elements(std::tm* calc_time,
+OrbElem MoonBase::calc_orbital_elements(const utctime::UTCTime& calc_time,
                                         const OrbElem& y2000_oes,
                                         const OrbElem& day_oes) const {
-    double seconds_since_y2000;
-
-    if ( calc_time == 0 ) {
-
-        //  If no time was specified, just get the difference in
-        //  seconds between the current UNIX timestamp, and the
-        //  UNIX timestamp at Y2000.
-        //
-        //  Note that this functionality does not appear to take
-        //  leap seconds into account, and the number of seconds
-        //  since Y2000 is short by a few (maybe 15). This is not
-        //  much, but it does create a small but noticeable
-        //  difference for the moon, as it orbits relatively
-        //  quickly.
-
-        static const time_t unix_epoch_y2000 = 946598400;
-        const time_t utc_t = time(0);
-        seconds_since_y2000 = difftime(utc_t, unix_epoch_y2000);
-
-    } else {
-
-        //  If a time was specified, we're interpreting it as UTC,
-        //  so we have some work to do.
-
-        //  First calculate the UNIX timestamp for Jan 1, 2000, 12:00pm,
-        //  as if the current system were on GMT. Make sure we ignore
-        //  DST, although it'll be off on Jan 1 anyway.
-
-        tm y2000_epoch_tm;
-        y2000_epoch_tm.tm_sec = 0;
-        y2000_epoch_tm.tm_min = 0;
-        y2000_epoch_tm.tm_hour = 0;
-        y2000_epoch_tm.tm_mday = 31;
-        y2000_epoch_tm.tm_mon = 11;
-        y2000_epoch_tm.tm_year = 99;
-        y2000_epoch_tm.tm_isdst = 0;
-        const time_t y2000_epoch = mktime(&y2000_epoch_tm);
-
-        //  Then get the UNIX timestamp for the specified time, again
-        //  as if the current system were on GMT. This time we really
-        //  do need to be sure we're ignoring DST, as UTC has no
-        //  concept of it and the date specified might be during the
-        //  summer.
-        //
-        //  Note that this assumes that, after ignoring DST, there is
-        //  no difference between local time and UTC except a constant
-        //  time offset.
-
-        tm calc_time_copy = *calc_time;
-        calc_time_copy.tm_isdst = 0;
-        const time_t utc_t = mktime(&calc_time_copy);
-
-        //  Then calculate the difference between the two times.
-
-        seconds_since_y2000 = difftime(utc_t, y2000_epoch);
-    }
-
+    static const time_t ts_epoch_y2000 = utctime::get_utc_timestamp(1999,
+                                           12, 31, 0, 0, 0);
+    double seconds_since_y2000 = difftime(calc_time.timestamp(),
+                                          ts_epoch_y2000);
     static const double secs_in_a_day = 86400;
     const double days = seconds_since_y2000 / secs_in_a_day;
 
@@ -130,8 +77,7 @@ RectCoords MoonBase::geo_ecl_coords() const {
     double lat = atan2(hec.z, hypot(hec.x, hec.y));
     double rhc = hoc.z;
 
-    tm calc_time = get_calc_time();
-    SunForMoon sfm(&calc_time);
+    SunForMoon sfm(get_calc_time());
     const OrbElem m_oes = get_orbital_elements();
     const OrbElem s_oes = sfm.get_orbital_elements();
 

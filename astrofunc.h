@@ -17,6 +17,7 @@
 #include <string>
 #include <cmath>
 #include "astro_common_types.h"
+#include "utc_time.h"
 
 
 namespace astro {
@@ -36,7 +37,7 @@ void deg_to_hms(const double degrees, HMS& hmsout);
 void deg_to_dms(const double degrees, DMS& dmsout);
 double hypot(const double opp, const double adj);
 void get_zodiac_info(const double rasc, ZodiacInfo& zInfo);
-double julian_date(tm * utc_time);
+double julian_date(const utctime::UTCTime& utc_time);
 tm get_utc_tm(tm * utc_time);
 double kepler(const double m_anom, const double ecc);
 void rec_to_sph(const RectCoords& rcd, SphCoords& scd);

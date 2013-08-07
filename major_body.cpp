@@ -17,6 +17,7 @@
 #include "astrofunc.h"
 #include "major_body.h"
 #include "planets.h"
+#include "utc_time.h"
 
 using namespace astro;
 
@@ -46,7 +47,7 @@ MajorBody::~MajorBody() {}
  */
 
 OrbElem
-MajorBody::calc_orbital_elements(std::tm* calc_time,
+MajorBody::calc_orbital_elements(const utctime::UTCTime& calc_time,
                                  const OrbElem& j2000_oes,
                                  const OrbElem& century_oes) const {
     static const double epoch_j2000 = 2451545;
@@ -73,8 +74,7 @@ MajorBody::calc_orbital_elements(std::tm* calc_time,
  */
 
 RectCoords MajorBody::geo_ecl_coords() const {
-    tm calc_time = get_calc_time();
-    const RectCoords eec = Earth(&calc_time).helio_ecl_coords();
+    const RectCoords eec = Earth(get_calc_time()).helio_ecl_coords();
     const RectCoords hec = helio_ecl_coords();
 
     RectCoords gec;

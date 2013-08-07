@@ -17,6 +17,7 @@
 #include "planets.h"
 #include "moon.h"
 #include "planet_func.h"
+#include "utc_time.h"
 
 using namespace astro;
 
@@ -29,16 +30,18 @@ void astro::show_planet_positions(std::ostream& out) {
 
     //  Set up planets
 
-    const Sun sun(0);
-    const Mercury mercury(0);
-    const Venus venus(0);
-    const Mars mars(0);
-    const Jupiter jupiter(0);
-    const Saturn saturn(0);
-    const Uranus uranus(0);
-    const Neptune neptune(0);
-    const Pluto pluto(0);
-    const Moon moon(0);
+    utctime::UTCTime utc;
+
+    const Sun sun(utc);
+    const Mercury mercury(utc);
+    const Venus venus(utc);
+    const Mars mars(utc);
+    const Jupiter jupiter(utc);
+    const Saturn saturn(utc);
+    const Uranus uranus(utc);
+    const Neptune neptune(utc);
+    const Pluto pluto(utc);
+    const Moon moon(utc);
 
     const Planet* planets[] = {&sun, &mercury, &venus,
                                &mars, &jupiter, &saturn,

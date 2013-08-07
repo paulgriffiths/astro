@@ -18,18 +18,19 @@
 #include <ctime>
 #include "astro_common_types.h"
 #include "astrofunc.h"
+#include "utc_time.h"
 
 namespace astro {
 
 class Planet {
     public:
-        explicit Planet(std::tm* calc_time, const OrbElem& oes) :
-            m_calc_time(get_utc_tm(calc_time)),
+        explicit Planet(const utctime::UTCTime& calc_time, const OrbElem& oes) :
+            m_calc_time(calc_time),
             m_oes(oes) {}
         virtual ~Planet() = 0;
 
         virtual std::string name() const = 0;
-        const tm& get_calc_time() const;
+        const utctime::UTCTime& get_calc_time() const;
         std::string calc_time_string() const;
 
         OrbElem get_orbital_elements() const;
@@ -42,7 +43,7 @@ class Planet {
         double distance() const;
 
     private:
-        const tm m_calc_time;
+        const utctime::UTCTime m_calc_time;
         const OrbElem m_oes;
 };
 
