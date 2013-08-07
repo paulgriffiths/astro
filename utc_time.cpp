@@ -481,8 +481,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
                                   const int day, const int hour,
                                   const int minute, const int second) {
 
-    //  Create a struct tm for the local time using the provided
-    //  inputs as if local time equals UTC.
+    //  Create a struct tm contained the desired UTC time.
 
     tm local_tm;
     local_tm.tm_sec = second;
@@ -499,20 +498,13 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
     time_t utc_maybe = get_fuzzy_utc_timestamp(&local_tm);
 
-    //  Check if it actually is right
-
     if ( !check_utc_timestamp(utc_maybe, year, month,
                               day, hour, minute, second) ) {
 
-        //  The datetime is not what we expected. The standard
-        //  library doesn't make it all that easy for us to deal
-        //  with times, so we'll resort to a few quick
-        //  brute-force calculations.
+        //  It wasn't right, so check the immediately preceding
+        //  and following hours which should almost always work
 
         bool error = true;
-
-        //  First try the immediately preceding and following hours
-        //  for the local time, this should almost always work.
 
         tm last_hour_tm = local_tm;
         tm_decrement_hour(&last_hour_tm);
@@ -523,8 +515,8 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         //  And now loop through them, doing the same calculation
         //  that we tried originally.
 
-        tm* hours[] = {&last_hour_tm, &local_tm, &next_hour_tm};
-        for ( int i = 0; i < 3 && error; ++i ) {
+        tm* hours[] = {&last_hour_tm, &next_hour_tm};
+        for ( int i = 0; i < 2 && error; ++i ) {
             utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
             if ( check_utc_timestamp(utc_maybe, year, month,
                                      day, hour, minute, second) ) {
@@ -538,38 +530,27 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  the DST offset is not a whole number of hours. This
             //  is pretty much a doomsday scenario, and the user is
             //  going to pay for living in such a weird place, but
-            //  let's loop through each minute to see if we can find
-            //  the answer, here. This is worst case 3 * 24 * 60 =
-            //  4,320 tests, so try not to live in a place like this.
-            //
-            //  Note: there may be some more efficient intermediate
-            //  tests before jumping straight into checking 4,320
-            //  minutes, but it should be pretty rare to get here.
+            //  let's loop through each minute over the last and
+            //  next two hours to see if we can find the answer,
+            //  here. This is worst case 5 * 60 = 300 tests,
+            //  so try not to live in a place like this.
 
-            //  We need struct tms for yesterday, today, and tomorrow.
+            tm before_last_hour_tm = last_hour_tm;
+            tm_decrement_hour(&before_last_hour_tm);
 
-            tm today_tm = local_tm;
-            tm yesterday_tm = today_tm;
-            tm_decrement_day(&yesterday_tm);
+            tm after_next_hour_tm = next_hour_tm;
+            tm_increment_hour(&after_next_hour_tm);
 
-            tm tomorrow_tm = local_tm;
-            tm_increment_day(&tomorrow_tm);
+            tm* hours[] = {&before_last_hour_tm, &last_hour_tm,
+                           &local_tm, &next_hour_tm, &after_next_hour_tm};
+            for ( int i = 0; i < 5 && error; ++i ) {
+                for ( int minute = 0; minute < 60 && error; ++minute ) {
+                    hours[i]->tm_min = minute;
 
-            //  Now loop through all the minutes in each of the
-            //  24 hours in each of the 3 days.
-
-            tm* days[] = {&yesterday_tm, &today_tm, &tomorrow_tm};
-            for ( int i = 0; i < 3 && error; ++i ) {
-                for ( int hour = 0; hour < 24 && error; ++hour ) {
-                    for ( int minute = 0; minute < 60 && error; ++minute ) {
-                        days[i]->tm_hour = hour;
-                        days[i]->tm_min = minute;
-
-                        utc_maybe = get_fuzzy_utc_timestamp(days[i]);
-                        if ( check_utc_timestamp(utc_maybe, year, month,
-                                                 day, hour, minute, second) ) {
-                            error = false;
-                        }
+                    utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
+                    if ( check_utc_timestamp(utc_maybe, year, month,
+                                             day, hour, minute, second) ) {
+                        error = false;
                     }
                 }
             }
@@ -577,14 +558,13 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             if ( error ) {
 
                 //  Well, we tried. We can't find it, so throw an
-                //  exception.
+                //  exception. Maybe you were unlucky enough to
+                //  have local time increment by a leap second.
 
-                throw bad_time_init();
+                throw bad_time();
             }
         }
     }
-
-    //  Getting here is nice.
 
     time_t utc_definitely = utc_maybe;
     return utc_definitely;
