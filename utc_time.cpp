@@ -535,6 +535,12 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  here. This is worst case 5 * 60 = 300 tests,
             //  so try not to live in a place like this.
 
+            //  I haven't been able to find a test case that
+            //  makes us end up here, so add a debug assertion
+            //  to make it real obvious if we ever do.
+
+            assert(false);
+
             tm before_last_hour_tm = last_hour_tm;
             tm_decrement_hour(&before_last_hour_tm);
 
