@@ -317,6 +317,38 @@ tm* utctime::tm_increment_hour(tm * changing_tm) {
 
 
 /*
+ *  Adds a minute to a supplied tm struct.
+ */
+
+tm* utctime::tm_increment_minute(tm * changing_tm) {
+    if ( changing_tm->tm_min < 59 ) {
+        changing_tm->tm_min += 1;
+    } else {
+        changing_tm->tm_min = 0;
+        tm_increment_hour(changing_tm);
+    }
+
+    return changing_tm;
+}
+
+
+/*
+ *  Adds a second to a supplied tm struct.
+ */
+
+tm* utctime::tm_increment_second(tm * changing_tm) {
+    if ( changing_tm->tm_sec < 59 ) {
+        changing_tm->tm_sec += 1;
+    } else {
+        changing_tm->tm_sec = 0;
+        tm_increment_minute(changing_tm);
+    }
+
+    return changing_tm;
+}
+
+
+/*
  *  Deducts a day from a supplied tm struct.
  */
 
@@ -378,6 +410,38 @@ tm* utctime::tm_decrement_hour(tm * changing_tm) {
     } else {
         changing_tm->tm_hour = 23;
         tm_decrement_day(changing_tm);
+    }
+
+    return changing_tm;
+}
+
+
+/*
+ *  Deducts a minute from a supplied tm struct.
+ */
+
+tm* utctime::tm_decrement_minute(tm * changing_tm) {
+    if ( changing_tm->tm_min > 0 ) {
+        changing_tm->tm_min -= 1;
+    } else {
+        changing_tm->tm_min = 59;
+        tm_decrement_hour(changing_tm);
+    }
+
+    return changing_tm;
+}
+
+
+/*
+ *  Deducts a second from a supplied tm struct.
+ */
+
+tm* utctime::tm_decrement_second(tm * changing_tm) {
+    if ( changing_tm->tm_sec > 0 ) {
+        changing_tm->tm_sec -= 1;
+    } else {
+        changing_tm->tm_sec = 59;
+        tm_decrement_minute(changing_tm);
     }
 
     return changing_tm;
