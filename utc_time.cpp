@@ -195,6 +195,38 @@ time_t utctime::get_day_diff() {
 
 
 /*
+ *  Compares two struct tms. Returns -1 is the first struct tm is
+ *  smaller than the second, 1 if the first struct tm is greater
+ *  than the second, and 0 if they are equal.
+ *
+ *  The function only compares the year, month, day, hour, minute
+ *  and second. Any timezone or DST information is ignored.
+ */
+
+int utctime::tm_compare(const tm& first, const tm& second) {
+    int compare_result;
+
+    if ( first.tm_year != second.tm_year ) {
+        compare_result = first.tm_year > second.tm_year ? 1 : -1;
+    } else if ( first.tm_mon != second.tm_mon ) {
+        compare_result = first.tm_mon > second.tm_mon ? 1 : -1;
+    } else if ( first.tm_mday != second.tm_mday ) {
+        compare_result = first.tm_mday > second.tm_mday ? 1 : -1;
+    } else if ( first.tm_hour != second.tm_hour ) {
+        compare_result = first.tm_hour > second.tm_hour ? 1 : -1;
+    } else if ( first.tm_min != second.tm_min ) {
+        compare_result = first.tm_min > second.tm_min ? 1 : -1;
+    } else if ( first.tm_sec != second.tm_sec ) {
+        compare_result = first.tm_sec > second.tm_sec ? 1 : -1;
+    } else {
+        compare_result = 0;
+    }
+
+    return compare_result;
+}
+
+
+/*
  *  Returns true if the supplied year is a leap year.
  */
 

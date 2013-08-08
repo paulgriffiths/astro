@@ -56,6 +56,7 @@ class bad_time : public UTCTimeException {
  */
 
 time_t get_day_diff();
+int tm_compare(const tm& first, const tm& second);
 bool is_leap_year(const int year);
 tm * tm_decrement_hour(tm * changing_tm);
 tm * tm_increment_hour(tm * changing_tm);
