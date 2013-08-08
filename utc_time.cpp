@@ -248,6 +248,9 @@ bool utctime::is_leap_year(const int year) {
  */
 
 tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
+    enum months {january, february, march, april, may, june, july,
+                 august, september, october, november, december};
+
     if ( quantity < 0 ) {
         tm_decrement_day(changing_tm, -quantity);
     } else {
@@ -256,19 +259,19 @@ tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
         while ( num_days-- ) {
             changing_tm->tm_mday += 1;
             switch ( changing_tm->tm_mon ) {
-                case 0:
-                case 2:
-                case 4:
-                case 6:
-                case 7:
-                case 9:
+                case january:
+                case march:
+                case may:
+                case july:
+                case august:
+                case october:
                     if ( changing_tm->tm_mday > 31 ) {
                         changing_tm->tm_mday = 1;
                         changing_tm->tm_mon += 1;
                     }
                     break;
 
-                case 11:
+                case december:
                     if ( changing_tm->tm_mday > 31 ) {
                         changing_tm->tm_mday = 1;
                         changing_tm->tm_mon = 0;
@@ -276,10 +279,10 @@ tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
                     }
                     break;
 
-                case 3:
-                case 5:
-                case 8:
-                case 10:
+                case april:
+                case june:
+                case september:
+                case november:
                     if ( changing_tm->tm_mday > 30 ) {
                         changing_tm->tm_mday = 1;
                         changing_tm->tm_mon +=1;
@@ -405,6 +408,9 @@ tm* utctime::tm_increment_second(tm * changing_tm, const int quantity) {
  */
 
 tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
+    enum months {january, february, march, april, may, june, july,
+                 august, september, october, november, december};
+
     if ( quantity < 0 ) {
         tm_increment_day(changing_tm, -quantity);
     } else {
@@ -415,31 +421,31 @@ tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
                 changing_tm->tm_mday -= 1;
             } else {
                 switch ( changing_tm->tm_mon ) {
-                    case 0:
+                    case january:
                         changing_tm->tm_mday = 31;
                         changing_tm->tm_mon = 11;
                         changing_tm->tm_year -= 1;
                         break;
 
-                    case 1:
-                    case 3:
-                    case 5:
-                    case 7:
-                    case 8:
-                    case 10:
+                    case february: 
+                    case april:
+                    case june:
+                    case august:
+                    case september:
+                    case november:
                         changing_tm->tm_mday = 31;
                         changing_tm->tm_mon -= 1;
                         break;
 
-                    case 4:
-                    case 6:
-                    case 9:
-                    case 11:
+                    case may:
+                    case july:
+                    case october:
+                    case december:
                         changing_tm->tm_mday = 30;
                         changing_tm->tm_mon -= 1;
                         break;
 
-                    case 2:
+                    case march:
                         if ( is_leap_year(changing_tm->tm_year) ) {
                             changing_tm->tm_mday = 29;
                         } else {
