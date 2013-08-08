@@ -435,3 +435,99 @@ TEST(TmIncrementHourGroup, Inc17Test) {
     CHECK_EQUAL(0, test_tm.tm_sec);
 }
 
+
+/*
+ *  Tests increment by 2 hours.
+ */
+
+TEST(TmIncrementHourGroup, Inc18Test) {
+    tm test_tm;
+    test_tm.tm_year = 2013;
+    test_tm.tm_mon = 11;
+    test_tm.tm_mday = 2;
+    test_tm.tm_hour = 16;
+    test_tm.tm_min = 23;
+    test_tm.tm_sec = 13;
+
+    tm_increment_hour(&test_tm, 2);
+
+    CHECK_EQUAL(2013, test_tm.tm_year);
+    CHECK_EQUAL(11, test_tm.tm_mon);
+    CHECK_EQUAL(2, test_tm.tm_mday);
+    CHECK_EQUAL(18, test_tm.tm_hour);
+    CHECK_EQUAL(23, test_tm.tm_min);
+    CHECK_EQUAL(13, test_tm.tm_sec);
+}
+
+
+/*
+ *  Tests increment by -2 hours.
+ */
+
+TEST(TmIncrementHourGroup, Inc19Test) {
+    tm test_tm;
+    test_tm.tm_year = 2013;
+    test_tm.tm_mon = 11;
+    test_tm.tm_mday = 2;
+    test_tm.tm_hour = 16;
+    test_tm.tm_min = 23;
+    test_tm.tm_sec = 13;
+
+    tm_increment_hour(&test_tm, -2);
+
+    CHECK_EQUAL(2013, test_tm.tm_year);
+    CHECK_EQUAL(11, test_tm.tm_mon);
+    CHECK_EQUAL(2, test_tm.tm_mday);
+    CHECK_EQUAL(14, test_tm.tm_hour);
+    CHECK_EQUAL(23, test_tm.tm_min);
+    CHECK_EQUAL(13, test_tm.tm_sec);
+}
+
+
+/*
+ *  Tests increment by 24 hours.
+ */
+
+TEST(TmIncrementHourGroup, Dec20Test) {
+    tm test_tm;
+    test_tm.tm_year = 2013;
+    test_tm.tm_mon = 11;
+    test_tm.tm_mday = 2;
+    test_tm.tm_hour = 16;
+    test_tm.tm_min = 23;
+    test_tm.tm_sec = 13;
+
+    tm_increment_hour(&test_tm, 24);
+
+    CHECK_EQUAL(2013, test_tm.tm_year);
+    CHECK_EQUAL(11, test_tm.tm_mon);
+    CHECK_EQUAL(3, test_tm.tm_mday);
+    CHECK_EQUAL(16, test_tm.tm_hour);
+    CHECK_EQUAL(23, test_tm.tm_min);
+    CHECK_EQUAL(13, test_tm.tm_sec);
+}
+
+
+/*
+ *  Tests increment by 197 hours.
+ */
+
+TEST(TmIncrementHourGroup, Dec21Test) {
+    tm test_tm;
+    test_tm.tm_year = 2013;
+    test_tm.tm_mon = 11;
+    test_tm.tm_mday = 2;
+    test_tm.tm_hour = 16;
+    test_tm.tm_min = 23;
+    test_tm.tm_sec = 13;
+
+    tm_increment_hour(&test_tm, 197);
+
+    CHECK_EQUAL(2013, test_tm.tm_year);
+    CHECK_EQUAL(11, test_tm.tm_mon);
+    CHECK_EQUAL(10, test_tm.tm_mday);
+    CHECK_EQUAL(21, test_tm.tm_hour);
+    CHECK_EQUAL(23, test_tm.tm_min);
+    CHECK_EQUAL(13, test_tm.tm_sec);
+}
+

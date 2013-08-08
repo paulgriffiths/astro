@@ -43,7 +43,11 @@ TESTOBJS+=tests/test_zodiac_sign_short.o
 TESTOBJS+=tests/test_planets.o
 TESTOBJS+=tests/test_moon.o
 TESTOBJS+=tests/test_tm_decrement_hour.o
+TESTOBJS+=tests/test_tm_decrement_minute.o
+TESTOBJS+=tests/test_tm_decrement_second.o
 TESTOBJS+=tests/test_tm_increment_hour.o
+TESTOBJS+=tests/test_tm_increment_minute.o
+TESTOBJS+=tests/test_tm_increment_second.o
 TESTOBJS+=tests/test_is_leap_year.o
 TESTOBJS+=tests/test_get_utc_timestamp.o
 TESTOBJS+=tests/test_get_utc_timestamp_gb.o
@@ -188,7 +192,23 @@ tests/test_tm_decrement_hour.o: tests/test_tm_decrement_hour.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+tests/test_tm_decrement_minute.o: tests/test_tm_decrement_minute.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_tm_decrement_second.o: tests/test_tm_decrement_second.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
 tests/test_tm_increment_hour.o: tests/test_tm_increment_hour.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_tm_increment_minute.o: tests/test_tm_increment_minute.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_tm_increment_second.o: tests/test_tm_increment_second.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

@@ -247,53 +247,61 @@ bool utctime::is_leap_year(const int year) {
  *  Adds a day to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_day(tm * changing_tm) {
-    changing_tm->tm_mday += 1;
-    switch ( changing_tm->tm_mon ) {
-        case 0:
-        case 2:
-        case 4:
-        case 6:
-        case 7:
-        case 9:
-            if ( changing_tm->tm_mday > 31 ) {
-                changing_tm->tm_mday = 1;
-                changing_tm->tm_mon += 1;
-            }
-            break;
+tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
+    if ( quantity < 0 ) {
+        tm_decrement_day(changing_tm, -quantity);
+    } else {
+        int num_days = quantity;
 
-        case 11:
-            if ( changing_tm->tm_mday > 31 ) {
-                changing_tm->tm_mday = 1;
-                changing_tm->tm_mon = 0;
-                changing_tm->tm_year += 1;
-            }
-            break;
+        while ( num_days-- ) {
+            changing_tm->tm_mday += 1;
+            switch ( changing_tm->tm_mon ) {
+                case 0:
+                case 2:
+                case 4:
+                case 6:
+                case 7:
+                case 9:
+                    if ( changing_tm->tm_mday > 31 ) {
+                        changing_tm->tm_mday = 1;
+                        changing_tm->tm_mon += 1;
+                    }
+                    break;
 
-        case 3:
-        case 5:
-        case 8:
-        case 10:
-            if ( changing_tm->tm_mday > 30 ) {
-                changing_tm->tm_mday = 1;
-                changing_tm->tm_mon +=1;
-            }
-            break;
+                case 11:
+                    if ( changing_tm->tm_mday > 31 ) {
+                        changing_tm->tm_mday = 1;
+                        changing_tm->tm_mon = 0;
+                        changing_tm->tm_year += 1;
+                    }
+                    break;
 
-        case 1:
-            if ( changing_tm->tm_mday > 29 ) {
-                changing_tm->tm_mday = 1;
-                changing_tm->tm_mon += 1;
-            } else if ( changing_tm->tm_mday > 28 &&
-                        !is_leap_year(changing_tm->tm_year) ) {
-                changing_tm->tm_mday = 1;
-                changing_tm->tm_mon += 1;
-            }
-            break;
+                case 3:
+                case 5:
+                case 8:
+                case 10:
+                    if ( changing_tm->tm_mday > 30 ) {
+                        changing_tm->tm_mday = 1;
+                        changing_tm->tm_mon +=1;
+                    }
+                    break;
 
-        default:
-            assert(false);
-            break;
+                case 1:
+                    if ( changing_tm->tm_mday > 29 ) {
+                        changing_tm->tm_mday = 1;
+                        changing_tm->tm_mon += 1;
+                    } else if ( changing_tm->tm_mday > 28 &&
+                                !is_leap_year(changing_tm->tm_year) ) {
+                        changing_tm->tm_mday = 1;
+                        changing_tm->tm_mon += 1;
+                    }
+                    break;
+
+                default:
+                    assert(false);
+                    break;
+            }
+        }
     }
 
     return changing_tm;
@@ -304,12 +312,27 @@ tm* utctime::tm_increment_day(tm * changing_tm) {
  *  Adds an hour to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_hour(tm * changing_tm) {
-    if ( changing_tm->tm_hour < 23 ) {
-        changing_tm->tm_hour += 1;
+tm* utctime::tm_increment_hour(tm * changing_tm, const int quantity) {
+    static const int hours_in_day = 24;
+
+    if ( quantity < 0 ) {
+        tm_decrement_hour(changing_tm, -quantity);
     } else {
-        changing_tm->tm_hour = 0;
-        tm_increment_day(changing_tm);
+        int num_hours = quantity;
+
+        if ( num_hours >= hours_in_day ||
+             num_hours >= hours_in_day - changing_tm->tm_hour ) {
+            int num_days = quantity / hours_in_day;
+            num_hours -= num_days * hours_in_day;
+            if ( num_hours >= hours_in_day - changing_tm->tm_hour ) {
+                ++num_days;
+                num_hours -= hours_in_day - changing_tm->tm_hour;
+                changing_tm->tm_hour = num_hours;
+            }
+            tm_increment_day(changing_tm, num_days);
+        }
+
+        changing_tm->tm_hour += num_hours;
     }
 
     return changing_tm;
@@ -320,14 +343,28 @@ tm* utctime::tm_increment_hour(tm * changing_tm) {
  *  Adds a minute to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_minute(tm * changing_tm) {
-    if ( changing_tm->tm_min < 59 ) {
-        changing_tm->tm_min += 1;
-    } else {
-        changing_tm->tm_min = 0;
-        tm_increment_hour(changing_tm);
-    }
+tm* utctime::tm_increment_minute(tm * changing_tm, const int quantity) {
+    static const int mins_in_hour = 60;
 
+    if ( quantity < 0 ) {
+        tm_decrement_minute(changing_tm, -quantity);
+    } else {
+        int num_mins = quantity;
+
+        if ( num_mins >= mins_in_hour ||
+             num_mins >= mins_in_hour - changing_tm->tm_min ) {
+            int num_hours = quantity / mins_in_hour;
+            num_mins -= num_hours * mins_in_hour;
+            if ( num_mins >= mins_in_hour - changing_tm->tm_min ) {
+                ++num_hours;
+                changing_tm->tm_min += num_mins - mins_in_hour;
+                num_mins = 0;
+            }
+            tm_increment_hour(changing_tm, num_hours);
+        }
+
+        changing_tm->tm_min += num_mins;
+    }
     return changing_tm;
 }
 
@@ -336,12 +373,27 @@ tm* utctime::tm_increment_minute(tm * changing_tm) {
  *  Adds a second to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_second(tm * changing_tm) {
-    if ( changing_tm->tm_sec < 59 ) {
-        changing_tm->tm_sec += 1;
+tm* utctime::tm_increment_second(tm * changing_tm, const int quantity) {
+    static const int secs_in_min = 60;
+
+    if ( quantity < 0 ) {
+        tm_decrement_second(changing_tm, -quantity);
     } else {
-        changing_tm->tm_sec = 0;
-        tm_increment_minute(changing_tm);
+        int num_secs = quantity;
+
+        if ( num_secs >= secs_in_min ||
+             num_secs >= secs_in_min - changing_tm->tm_sec ) {
+            int num_mins = quantity / secs_in_min;
+            num_secs -= num_mins * secs_in_min;
+            if ( num_secs >= secs_in_min - changing_tm->tm_sec ) {
+                ++num_mins;
+                changing_tm->tm_sec += num_secs - secs_in_min;
+                num_secs = 0;
+            }
+            tm_increment_minute(changing_tm, num_mins);
+        }
+
+        changing_tm->tm_sec += num_secs;
     }
 
     return changing_tm;
@@ -352,47 +404,55 @@ tm* utctime::tm_increment_second(tm * changing_tm) {
  *  Deducts a day from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_day(tm * changing_tm) {
-    if ( changing_tm->tm_mday > 1 ) {
-        changing_tm->tm_mday -= 1;
+tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
+    if ( quantity < 0 ) {
+        tm_increment_day(changing_tm, -quantity);
     } else {
-        switch ( changing_tm->tm_mon ) {
-            case 0:
-                changing_tm->tm_mday = 31;
-                changing_tm->tm_mon = 11;
-                changing_tm->tm_year -= 1;
-                break;
+        int num_days = quantity;
 
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-                changing_tm->tm_mday = 31;
-                changing_tm->tm_mon -= 1;
-                break;
+        while ( num_days-- ) {
+            if ( changing_tm->tm_mday > 1 ) {
+                changing_tm->tm_mday -= 1;
+            } else {
+                switch ( changing_tm->tm_mon ) {
+                    case 0:
+                        changing_tm->tm_mday = 31;
+                        changing_tm->tm_mon = 11;
+                        changing_tm->tm_year -= 1;
+                        break;
 
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-                changing_tm->tm_mday = 30;
-                changing_tm->tm_mon -= 1;
-                break;
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 7:
+                    case 8:
+                    case 10:
+                        changing_tm->tm_mday = 31;
+                        changing_tm->tm_mon -= 1;
+                        break;
 
-            case 2:
-                if ( is_leap_year(changing_tm->tm_year) ) {
-                    changing_tm->tm_mday = 29;
-                } else {
-                    changing_tm->tm_mday = 28;
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
+                        changing_tm->tm_mday = 30;
+                        changing_tm->tm_mon -= 1;
+                        break;
+
+                    case 2:
+                        if ( is_leap_year(changing_tm->tm_year) ) {
+                            changing_tm->tm_mday = 29;
+                        } else {
+                            changing_tm->tm_mday = 28;
+                        }
+                        changing_tm->tm_mon -= 1;
+                        break;
+
+                    default:
+                        assert(false);
+                        break;
                 }
-                changing_tm->tm_mon -= 1;
-                break;
-
-            default:
-                assert(false);
-                break;
+            }
         }
     }
 
@@ -404,12 +464,26 @@ tm* utctime::tm_decrement_day(tm * changing_tm) {
  *  Deducts an hour from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_hour(tm * changing_tm) {
-    if ( changing_tm->tm_hour > 0 ) {
-        changing_tm->tm_hour -= 1;
+tm* utctime::tm_decrement_hour(tm * changing_tm, const int quantity) {
+    static const int hours_in_day = 24;
+
+    if ( quantity < 0 ) {
+        tm_increment_hour(changing_tm, -quantity);
     } else {
-        changing_tm->tm_hour = 23;
-        tm_decrement_day(changing_tm);
+        int num_hours = quantity;
+
+        if ( num_hours >= hours_in_day || num_hours > changing_tm->tm_hour ) {
+            int num_days = quantity / hours_in_day;
+            num_hours -= num_days * hours_in_day;
+            if ( num_hours > changing_tm->tm_hour ) {
+                ++num_days;
+                num_hours -= changing_tm->tm_hour;
+                changing_tm->tm_hour = hours_in_day;
+            }
+            tm_decrement_day(changing_tm, num_days);
+        }
+
+        changing_tm->tm_hour -= num_hours;
     }
 
     return changing_tm;
@@ -420,14 +494,27 @@ tm* utctime::tm_decrement_hour(tm * changing_tm) {
  *  Deducts a minute from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_minute(tm * changing_tm) {
-    if ( changing_tm->tm_min > 0 ) {
-        changing_tm->tm_min -= 1;
-    } else {
-        changing_tm->tm_min = 59;
-        tm_decrement_hour(changing_tm);
-    }
+tm* utctime::tm_decrement_minute(tm * changing_tm, const int quantity) {
+    static const int mins_in_hour = 60;
 
+    if ( quantity < 0 ) {
+        tm_increment_minute(changing_tm, -quantity);
+    } else {
+        int num_mins = quantity;
+
+        if ( num_mins >= mins_in_hour || num_mins > changing_tm->tm_min ) {
+            int num_hours = quantity / mins_in_hour;
+            num_mins -= num_hours * mins_in_hour;
+            if ( num_mins > changing_tm->tm_min ) {
+                ++num_hours;
+                num_mins -= changing_tm->tm_min;
+                changing_tm->tm_min = mins_in_hour;
+            }
+            tm_decrement_hour(changing_tm, num_hours);
+        }
+
+        changing_tm->tm_min -= num_mins;
+    }
     return changing_tm;
 }
 
@@ -436,12 +523,26 @@ tm* utctime::tm_decrement_minute(tm * changing_tm) {
  *  Deducts a second from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_second(tm * changing_tm) {
-    if ( changing_tm->tm_sec > 0 ) {
-        changing_tm->tm_sec -= 1;
+tm* utctime::tm_decrement_second(tm * changing_tm, const int quantity) {
+    static const int secs_in_min = 60;
+
+    if ( quantity < 0 ) {
+        tm_increment_second(changing_tm, -quantity);
     } else {
-        changing_tm->tm_sec = 59;
-        tm_decrement_minute(changing_tm);
+        int num_secs = quantity;
+
+        if ( num_secs >= secs_in_min || num_secs > changing_tm->tm_sec ) {
+            int num_mins = quantity / secs_in_min;
+            num_secs -= num_mins * secs_in_min;
+            if ( num_secs > changing_tm->tm_sec ) {
+                ++num_mins;
+                num_secs -= changing_tm->tm_sec;
+                changing_tm->tm_sec = secs_in_min;
+            }
+            tm_decrement_minute(changing_tm, num_mins);
+        }
+
+        changing_tm->tm_sec -= num_secs;
     }
 
     return changing_tm;
