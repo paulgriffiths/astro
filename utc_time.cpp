@@ -275,7 +275,11 @@ tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
                     if ( changing_tm->tm_mday > 31 ) {
                         changing_tm->tm_mday = 1;
                         changing_tm->tm_mon = 0;
-                        changing_tm->tm_year += 1;
+                        if ( changing_tm->tm_year == -1 ) {
+                            changing_tm->tm_year = 1;
+                        } else {
+                            changing_tm->tm_year += 1;
+                        }
                     }
                     break;
 
@@ -424,7 +428,11 @@ tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
                     case january:
                         changing_tm->tm_mday = 31;
                         changing_tm->tm_mon = 11;
-                        changing_tm->tm_year -= 1;
+                        if ( changing_tm->tm_year == 1 ) {
+                            changing_tm->tm_year = -1;
+                        } else {
+                            changing_tm->tm_year -= 1;
+                        }
                         break;
 
                     case february: 
