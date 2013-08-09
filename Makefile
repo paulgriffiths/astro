@@ -55,6 +55,7 @@ TESTOBJS+=tests/test_get_utc_timestamp_gb.o
 TESTOBJS+=tests/test_get_utc_timestamp_eet.o
 TESTOBJS+=tests/test_get_utc_timestamp_nsw.o
 TESTOBJS+=tests/test_get_utc_timestamp_xxx.o
+TESTOBJS+=tests/test_validate_date.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -240,4 +241,8 @@ tests/test_get_utc_timestamp_nsw.o: tests/test_get_utc_timestamp_nsw.cpp \
 tests/test_get_utc_timestamp_xxx.o: tests/test_get_utc_timestamp_xxx.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXX_POSIX_FLAGS) -c -o $@ $<
+
+tests/test_validate_date.o: tests/test_validate_date.cpp \
+	utc_time.cpp utc_time.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

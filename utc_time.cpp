@@ -11,6 +11,7 @@
  */
 
 
+#include <sstream>
 #include <ctime>
 #include <cassert>
 #include "utc_time.h"
@@ -54,6 +55,30 @@ UTCTime::UTCTime() :
 
 
 /*
+ *  Constructor initializing with a tm struct
+ */
+
+UTCTime::UTCTime(const tm& utc_tm) :
+        m_year(utc_tm.tm_year + 1900), m_month(utc_tm.tm_mon + 1),
+        m_day(utc_tm.tm_mday), m_hour(utc_tm.tm_hour),
+        m_minute(utc_tm.tm_min), m_second(utc_tm.tm_sec),
+        m_timestamp(0) {
+    try {
+        validate_date(m_year, m_month, m_day, m_hour, m_minute, m_second);
+    } catch(invalid_date) {
+        throw;
+    }
+
+    try {
+        m_timestamp = get_utc_timestamp(m_year, m_month, m_day,
+                                        m_hour, m_minute, m_second);
+    } catch(bad_time) {
+        throw bad_time_init();
+    }
+}
+
+
+/*
  *  Constructor for initializing to specified date & time.
  *
  *  Throws bad_time_init() if cannot get the current time.
@@ -66,8 +91,14 @@ UTCTime::UTCTime(const int year, const int month,
         m_hour(hour), m_minute(minute), m_second(second),
         m_timestamp(0) {
     try {
-        m_timestamp = get_utc_timestamp(year, month, day,
-                                        hour, minute, second);
+        validate_date(m_year, m_month, m_day, m_hour, m_minute, m_second);
+    } catch(invalid_date) {
+        throw;
+    }
+
+    try {
+        m_timestamp = get_utc_timestamp(m_year, m_month, m_day,
+                                        m_hour, m_minute, m_second);
     } catch(bad_time) {
         throw bad_time_init();
     }
@@ -123,6 +154,57 @@ time_t UTCTime::timestamp() const {
  * Standalone function definitions.
  *
  ********************************************************************/
+
+
+/*
+ *  Checks whether a supplied date is valid, and throws invalid_date()
+ *  if it isn't.
+ */
+
+bool utctime::validate_date(const int year, const int month,
+                            const int day, const int hour,
+                            const int minute, const int second) {
+    static const int days_in_month[] = {31, 28, 31, 30, 31, 30,
+                                        31, 31, 30, 31, 30, 31};
+    static const char* month_names[] = {"January", "February", "March",
+                                        "April", "May", "June", "July",
+                                        "August", "September", "October",
+                                        "November", "December"};
+
+    if ( year == 0 ) {
+        std::ostringstream oss;
+        oss << "Invalid year: " << year;
+        throw invalid_date(oss.str());
+    } else if ( month < 1 || month > 12 ) {
+        std::ostringstream oss;
+        oss << "Invalid month: " << month;
+        throw invalid_date(oss.str());
+    } else if ( day < 1 ) {
+        std::ostringstream oss;
+        oss << "Invalid day: " << day;
+        throw invalid_date(oss.str());
+    } else if ( day > days_in_month[month - 1] &&
+                !(month == 2 && day == 29 && is_leap_year(year)) ) {
+        std::ostringstream oss;
+        oss << "Invalid day: " << day << " of " << month_names[month - 1]
+            << ", " << year;
+        throw invalid_date(oss.str());
+    } else if ( hour < 0 || hour > 23 ) {
+        std::ostringstream oss;
+        oss << "Invalid hour: " << hour;
+        throw invalid_date(oss.str());
+    } else if ( minute < 0 || minute > 59 ) {
+        std::ostringstream oss;
+        oss << "Invalid minute: " << minute;
+        throw invalid_date(oss.str());
+    } else if ( second < 0 || second > 59 ) {
+        std::ostringstream oss;
+        oss << "Invalid second: " << second;
+        throw invalid_date(oss.str());
+    }
+
+    return true;
+}
 
 
 /*

@@ -18,6 +18,17 @@
 void show_times();
 
 int main(void) {
+    try {
+        utctime::UTCTime utc(1, 12, 31, 6, 6, 6);
+    } catch(utctime::UTCTimeException& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+
+    utctime::UTCTime utc;
+    std::cout << "Current UTC time is: " << utc.time_string()
+              << std::endl << std::endl;
+
     astro::show_planet_positions(std::cout);
     return 0;
 }
