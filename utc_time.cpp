@@ -737,25 +737,32 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
     //  Compute the difference with the desired UTC time...
 
-    const int secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month,
-                                                     day, hour, minute, second);
+    int secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month,
+                                               day, hour, minute, second);
 
     //  ...and adjust the timestamp, if needed.
 
     if ( secs_diff ) {
-        utc_ts -= get_sec_diff() * secs_diff;
-        if ( get_utc_timestamp_sec_diff(utc_ts, year, month,
-                                        day, hour, minute, second) ) {
+        const time_t one_sec = get_sec_diff();
+        utc_ts -= one_sec * secs_diff;
 
-            //  We could conceivably get here if we're unlucky enough
-            //  to have a leap second fall between the approximate
-            //  timestamp, and the actual one, since our function for
-            //  obtaining the difference between two structs tm does
-            //  not take leap seconds into account. Modifying this
-            //  to check the second on either side of the adjusted
-            //  timestamp on a second failure should take care of it.
+        secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month, day,
+                                               hour, minute, second);
 
-            throw bad_time();
+        if ( secs_diff ) {
+
+            //  We're pretty unlucky if we get here, but let's check
+            //  for a leap second on either side, and give up if not.
+
+            if ( get_utc_timestamp_sec_diff(utc_ts + one_sec, year, month,
+                                            day, hour, minute, second) == 0 ) {
+               utc_ts += one_sec;
+            } else if ( get_utc_timestamp_sec_diff(utc_ts - one_sec, year,
+                                     month, day, hour, minute, second) == 0 ) {
+               utc_ts -= one_sec;
+            } else { 
+                throw bad_time();
+            }
         }
     }
 
