@@ -271,7 +271,7 @@ std::string astro::decl_string(const double decl) {
 
     std::ostringstream oStream;
     oStream << std::setfill('0');
-    oStream << (decl >= 0 ? "+" : "")
+    oStream << (dms.degrees >= 0 ? "+" : "")
             << std::setw(2) << dms.degrees << "d "
             << std::setw(2) << fabs(dms.minutes) << "m "
             << std::setw(2) << fabs(dms.seconds) << "s";
