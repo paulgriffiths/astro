@@ -746,6 +746,15 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         utc_ts -= get_sec_diff() * secs_diff;
         if ( get_utc_timestamp_sec_diff(utc_ts, year, month,
                                         day, hour, minute, second) ) {
+
+            //  We could conceivably get here if we're unlucky enough
+            //  to have a leap second fall between the approximate
+            //  timestamp, and the actual one, since our function for
+            //  obtaining the difference between two structs tm does
+            //  not take leap seconds into account. Modifying this
+            //  to check the second on either side of the adjusted
+            //  timestamp on a second failure should take care of it.
+
             throw bad_time();
         }
     }
@@ -759,8 +768,14 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
  *  calculated by calling gmtime() with the provided timestamp,
  *  and the UTC time desired, specified in the other arguments.
  *
- *  This function only works if the timestamp is less than 24
- *  hours away from the desired time.
+ *  This function only returns a good value if the timestamp is less
+ *  than 24 hours away from the desired time, so the caller should
+ *  make sure it is.
+ *
+ *  This function may also return a value off by one second if
+ *  you're unlucky enough to both have a leap second fall between
+ *  the desired UTC time and the provided time stamp, and if you're
+ *  on a system which implements leap seconds.
  */
 
 int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
