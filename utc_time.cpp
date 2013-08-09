@@ -133,24 +133,40 @@ time_t UTCTime::timestamp() const {
  *  Throws bad_time() if cannot get the current time.
  */
 
-bool utctime::check_utc_timestamp(const time_t check_time,
+bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
                                   const int year, const int month,
                                   const int day, const int hour,
                                   const int minute, const int second) {
-    tm* check_tm = gmtime(&check_time);
-    if ( check_tm == 0 ) {
+    tm* ptm = gmtime(&check_time);
+    if ( ptm == 0 ) {
         throw bad_time();
     }
 
+    tm check_tm = *ptm;
     bool agrees = false;
-    if ( check_tm->tm_year + 1900 == year &&
-         check_tm->tm_mon + 1 == month &&
-         check_tm->tm_mday == day &&
-         check_tm->tm_hour == hour &&
-         check_tm->tm_min == minute &&
-         check_tm->tm_sec == second ) {
+    if ( check_tm.tm_year + 1900 == year &&
+         check_tm.tm_mon + 1 == month &&
+         check_tm.tm_mday == day &&
+         check_tm.tm_hour == hour &&
+         check_tm.tm_min == minute &&
+         check_tm.tm_sec == second ) {
         agrees = true;
     }
+
+    if ( agrees == false ) {
+        tm utc_tm;
+        utc_tm.tm_year = year - 1900;
+        utc_tm.tm_mon = month - 1;
+        utc_tm.tm_mday = day;
+        utc_tm.tm_hour = hour;
+        utc_tm.tm_min = minute;
+        utc_tm.tm_sec = second;
+
+        secs_diff = tm_adj_day_secs_diff(utc_tm, check_tm);
+    } else {
+        secs_diff = 0;
+    }
+
     return agrees;
 }
 
@@ -223,6 +239,32 @@ int utctime::tm_compare(const tm& first, const tm& second) {
     }
 
     return compare_result;
+}
+
+
+int utctime::tm_adj_day_secs_diff(const tm& first, const tm& second) {
+    static const int secs_in_day = 86400;
+    static const int secs_in_hour = 3600;
+    static const int secs_in_min = 60;
+
+    int time_comp = tm_compare(first, second);
+    int difference = 0;
+
+    if ( time_comp == 0 ) {
+        difference = 0;
+    } else {
+        difference = (second.tm_hour - first.tm_hour) * secs_in_hour;
+        difference += (second.tm_min - first.tm_min) * secs_in_min;
+        difference += (second.tm_sec - first.tm_sec);
+
+        if ( time_comp == 1 && difference > 0 ) {
+            difference -= secs_in_day;
+        } else if ( time_comp == -1 && difference < 0 ) {
+            difference += secs_in_day;
+        }
+    }
+    
+    return difference;
 }
 
 
@@ -709,8 +751,9 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
     //  on when it might *not* be right.
 
     time_t utc_maybe = get_fuzzy_utc_timestamp(&local_tm);
+    int secs_diff = 0;
 
-    if ( !check_utc_timestamp(utc_maybe, year, month,
+    if ( !check_utc_timestamp(utc_maybe, secs_diff, year, month,
                               day, hour, minute, second) ) {
 
         //  It wasn't right, so check the immediately preceding
@@ -730,7 +773,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         tm* hours[] = {&last_hour_tm, &next_hour_tm};
         for ( int i = 0; i < 2 && error; ++i ) {
             utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-            if ( check_utc_timestamp(utc_maybe, year, month,
+            if ( check_utc_timestamp(utc_maybe, secs_diff, year, month,
                                      day, hour, minute, second) ) {
                 error = false;
             }
@@ -761,7 +804,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
                     hours[i]->tm_min = min;
 
                     utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-                    if ( check_utc_timestamp(utc_maybe, year, month,
+                    if ( check_utc_timestamp(utc_maybe, secs_diff, year, month,
                                              day, hour, minute, second) ) {
                         error = false;
                     }

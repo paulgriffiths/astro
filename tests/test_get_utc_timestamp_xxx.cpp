@@ -39,6 +39,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp1Test) {
     const int year = 2013;
     const int month = 4;
     const int day = 7;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -46,7 +47,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp1Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -62,6 +63,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp2Test) {
     const int year = 2013;
     const int month = 4;
     const int day = 6;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -69,7 +71,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp2Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -85,6 +87,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp3Test) {
     const int year = 2013;
     const int month = 4;
     const int day = 8;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -92,7 +95,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp3Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -112,6 +115,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp4Test) {
     const int year = 2013;
     const int month = 10;
     const int day = 6;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -119,7 +123,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp4Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -135,6 +139,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp5Test) {
     const int year = 2013;
     const int month = 10;
     const int day = 5;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -142,7 +147,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp5Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -158,6 +163,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp6Test) {
     const int year = 2013;
     const int month = 10;
     const int day = 7;
+    int secs_diff;
 
     setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
 
@@ -165,7 +171,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp6Test) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }

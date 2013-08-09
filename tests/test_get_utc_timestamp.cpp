@@ -36,12 +36,13 @@ TEST(GetUTCTimestampGroup, GetTimeStamp1Test) {
     const int year = 2013;
     const int month = 3;
     const int day = 10;
+    int secs_diff;
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -57,12 +58,13 @@ TEST(GetUTCTimestampGroup, GetTimeStamp2Test) {
     const int year = 2013;
     const int month = 3;
     const int day = 9;
+    int secs_diff;
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -83,12 +85,13 @@ TEST(GetUTCTimestampGroup, GetTimeStamp3Test) {
     const int year = 2013;
     const int month = 10;
     const int day = 3;
+    int secs_diff;
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -104,12 +107,13 @@ TEST(GetUTCTimestampGroup, GetTimeStamp4Test) {
     const int year = 2013;
     const int month = 10;
     const int day = 2;
+    int secs_diff;
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }
@@ -125,12 +129,13 @@ TEST(GetUTCTimestampGroup, GetTimeStamp5Test) {
     const int year = 1980;
     const int month = 4;
     const int day = 5;
+    int secs_diff;
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
             time_t check_timestamp = get_utc_timestamp(year, month, day,
                                                        hour, minute, 0);
-            CHECK(check_utc_timestamp(check_timestamp,
+            CHECK(check_utc_timestamp(check_timestamp, secs_diff,
                                       year, month, day,
                                       hour, minute, 0));
         }

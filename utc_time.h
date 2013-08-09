@@ -57,6 +57,7 @@ class bad_time : public UTCTimeException {
 
 time_t get_day_diff();
 int tm_compare(const tm& first, const tm& second);
+int tm_adj_day_secs_diff(const tm& first, const tm& second);
 bool is_leap_year(const int year);
 tm * tm_increment_day(tm * changing_tm, const int quantity = 1);
 tm * tm_increment_hour(tm * changing_tm, const int quantity = 1);
@@ -67,7 +68,7 @@ tm * tm_decrement_hour(tm * changing_tm, const int quantity = 1);
 tm * tm_decrement_minute(tm * changing_tm, const int quantity = 1);
 tm * tm_decrement_second(tm * changing_tm, const int quantity = 1);
 time_t get_fuzzy_utc_timestamp(const tm* const local_tm);
-bool check_utc_timestamp(const time_t check_time,
+bool check_utc_timestamp(const time_t check_time, int& secs_diff,
                          const int year, const int month,
                          const int day, const int hour,
                          const int minute, const int second);
