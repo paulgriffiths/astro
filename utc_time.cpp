@@ -201,13 +201,13 @@ time_t utctime::get_day_diff() {
     datum_day.tm_year = 30;
     datum_day.tm_isdst = -1;
 
-    time_t datum_time = mktime(&datum_day);
+    const time_t datum_time = mktime(&datum_day);
     if ( datum_time == -1 ) {
         throw bad_time();
     }
 
     datum_day.tm_mday += 1;
-    time_t tomorrow_time = mktime(&datum_day);
+    const time_t tomorrow_time = mktime(&datum_day);
     if ( tomorrow_time == -1 ) {
         throw bad_time();
     }
@@ -242,13 +242,13 @@ time_t utctime::get_hour_diff() {
     datum_day.tm_year = 30;
     datum_day.tm_isdst = -1;
 
-    time_t datum_time = mktime(&datum_day);
+    const time_t datum_time = mktime(&datum_day);
     if ( datum_time == -1 ) {
         throw bad_time();
     }
 
     datum_day.tm_hour += 1;
-    time_t next_hour_time = mktime(&datum_day);
+    const time_t next_hour_time = mktime(&datum_day);
     if ( next_hour_time == -1 ) {
         throw bad_time();
     }
@@ -283,13 +283,13 @@ time_t utctime::get_sec_diff() {
     datum_day.tm_year = 30;
     datum_day.tm_isdst = -1;
 
-    time_t datum_time = mktime(&datum_day);
+    const time_t datum_time = mktime(&datum_day);
     if ( datum_time == -1 ) {
         throw bad_time();
     }
 
     datum_day.tm_sec += 1;
-    time_t next_sec_time = mktime(&datum_day);
+    const time_t next_sec_time = mktime(&datum_day);
     if ( next_sec_time == -1 ) {
         throw bad_time();
     }
@@ -348,7 +348,7 @@ int utctime::tm_intraday_secs_diff(const tm& first, const tm& second) {
     static const int secs_in_hour = 3600;
     static const int secs_in_min = 60;
 
-    int time_comp = tm_compare(first, second);
+    const int time_comp = tm_compare(first, second);
     int difference = 0;
 
     if ( time_comp == 0 ) {
@@ -737,8 +737,8 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
     //  Compute the difference with the desired UTC time...
 
-    int secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month,
-                                               day, hour, minute, second);
+    const int secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month,
+                                                     day, hour, minute, second);
 
     //  ...and adjust the timestamp, if needed.
 
