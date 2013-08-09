@@ -49,7 +49,7 @@ TESTOBJS+=tests/test_tm_increment_hour.o
 TESTOBJS+=tests/test_tm_increment_minute.o
 TESTOBJS+=tests/test_tm_increment_second.o
 TESTOBJS+=tests/test_is_leap_year.o
-TESTOBJS+=tests/test_tm_adj_day_secs_diff.o
+TESTOBJS+=tests/test_tm_intraday_secs_diff.o
 TESTOBJS+=tests/test_get_utc_timestamp.o
 TESTOBJS+=tests/test_get_utc_timestamp_gb.o
 TESTOBJS+=tests/test_get_utc_timestamp_eet.o
@@ -213,7 +213,7 @@ tests/test_tm_increment_second.o: tests/test_tm_increment_second.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-tests/test_tm_adj_day_secs_diff.o: tests/test_tm_adj_day_secs_diff.cpp \
+tests/test_tm_intraday_secs_diff.o: tests/test_tm_intraday_secs_diff.cpp \
 	utc_time.cpp utc_time.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

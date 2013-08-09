@@ -1,10 +1,10 @@
 /*
- *  test_tm_adj_day_secs_diff.cpp
- *  =============================
+ *  test_tm_intraday_secs_diff.cpp
+ *  ==============================
  *  Copyright 2013 Paul Griffiths
  *  Email: mail@paulgriffiths.net
  *
- *  Unit tests for tm_adj_day_secs_diff() function.
+ *  Unit tests for tm_intraday_secs_diff() function.
  *
  *  Uses CppUTest unit testing framework.
  *
@@ -44,7 +44,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff1Test) {
     second.tm_min = 17;
     second.tm_sec = 10;
 
-    const int test_result = tm_adj_day_secs_diff(first, second);
+    const int test_result = tm_intraday_secs_diff(first, second);
     CHECK_EQUAL(3600, test_result);
 }
 
@@ -70,7 +70,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff2Test) {
     second.tm_min = 17;
     second.tm_sec = 10;
 
-    const int test_result = tm_adj_day_secs_diff(second, first);
+    const int test_result = tm_intraday_secs_diff(second, first);
     CHECK_EQUAL(-3600, test_result);
 }
 
@@ -96,7 +96,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff3Test) {
     second.tm_min = 45;
     second.tm_sec = 15;
 
-    const int test_result = tm_adj_day_secs_diff(first, second);
+    const int test_result = tm_intraday_secs_diff(first, second);
     CHECK_EQUAL(12600, test_result);
 }
 
@@ -122,7 +122,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff4Test) {
     second.tm_min = 45;
     second.tm_sec = 15;
 
-    const int test_result = tm_adj_day_secs_diff(second, first);
+    const int test_result = tm_intraday_secs_diff(second, first);
     CHECK_EQUAL(-12600, test_result);
 }
 
@@ -149,7 +149,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff5Test) {
     second.tm_min = 17;
     second.tm_sec = 10;
 
-    const int test_result = tm_adj_day_secs_diff(first, second);
+    const int test_result = tm_intraday_secs_diff(first, second);
     CHECK_EQUAL(3600, test_result);
 }
 
@@ -176,7 +176,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff6Test) {
     second.tm_min = 17;
     second.tm_sec = 10;
 
-    const int test_result = tm_adj_day_secs_diff(second, first);
+    const int test_result = tm_intraday_secs_diff(second, first);
     CHECK_EQUAL(-3600, test_result);
 }
 
@@ -203,7 +203,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff7Test) {
     second.tm_min = 45;
     second.tm_sec = 15;
 
-    const int test_result = tm_adj_day_secs_diff(first, second);
+    const int test_result = tm_intraday_secs_diff(first, second);
     CHECK_EQUAL(12600, test_result);
 }
 
@@ -230,7 +230,7 @@ TEST(AdjDaySecsDiffGroup, AdjDaySecsDiff8Test) {
     second.tm_min = 45;
     second.tm_sec = 15;
 
-    const int test_result = tm_adj_day_secs_diff(second, first);
+    const int test_result = tm_intraday_secs_diff(second, first);
     CHECK_EQUAL(-12600, test_result);
 }
 
