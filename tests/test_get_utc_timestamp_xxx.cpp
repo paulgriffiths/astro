@@ -41,7 +41,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp1Test) {
     const int day = 7;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
@@ -65,7 +65,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp2Test) {
     const int day = 6;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
@@ -89,7 +89,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp3Test) {
     const int day = 8;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
@@ -117,7 +117,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp4Test) {
     const int day = 6;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
@@ -141,7 +141,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp5Test) {
     const int day = 5;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {
@@ -165,7 +165,7 @@ TEST(GetUTCTimestampXXXGroup, GetTimeStamp6Test) {
     const int day = 7;
     int secs_diff;
 
-    setenv("TZ", "EST-10EST-10:57:00,M10.1.0,M4.1.0/3", 1);
+    setenv("TZ", "EST-10EST-9:03:00,M10.1.0,M4.1.0/3", 1);
 
     for ( int hour = 0; hour < 24; ++hour ) {
         for ( int minute = 0; minute < 60; minute += 15 ) {

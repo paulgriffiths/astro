@@ -12,26 +12,39 @@
 
 #include <iostream>
 #include <ctime>
+#include <cstdlib>
 #include "astro.h"
 
 void show_times();
 
 int main(void) {
-    utctime::UTCTime utc(2013, 3, 10, 4, 0, 0);
-//    return 0;
     astro::show_planet_positions(std::cout);
-    show_times();
     return 0;
 }
+
+
+/*
+ *  Function shows, for a timestamp returned by a UTCTime class,
+ *  the results of localtime(), gmtime(), and the UTC time that
+ *  the UTCTime class thinks it generated. Used for debugging
+ *  purposes.
+ */
 
 void show_times() {
     char buffer[100];
 
     const int year = 2013;
-    const int month = 3;
-    int day = 10;
+    const int month = 4;
+    int day = 7;
     
+    //  Set timezone (POSIX extension)
+
+    setenv("TZ", "EST-10EST-9:03:00,M10,1.0,M4.1.0/3", 1);
+
+    //  Shows times for each hour in the selected day
+
     for ( int hour = 0; hour < 24; ++hour ) {
+
         utctime::UTCTime utc(year, month, day, hour, 0, 0);
 
         time_t ts = utc.timestamp();

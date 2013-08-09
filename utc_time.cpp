@@ -130,6 +130,10 @@ time_t UTCTime::timestamp() const {
  *  date corresponding with the date and time information provided
  *  when gmtime() is called with it.
  *
+ *  The function modifies the second argument, 'secs_diff', to contain
+ *  the difference in seconds between the time we're checking, and
+ *  the time gmtime() actually gives us. 
+ *
  *  Throws bad_time() if cannot get the current time.
  */
 
@@ -207,6 +211,84 @@ time_t utctime::get_day_diff() {
     }
 
     return (tomorrow_time - datum_time);
+}
+
+
+/*
+ *  Calculate a time_t value which represents a difference of
+ *  one hour. The C standard does not define the units in which
+ *  a time_t value is measured. On most UNIX systems it's measured
+ *  in seconds, but we can't assume this, so we find out for
+ *  sure by setting up two struct tms a second apart and calculating
+ *  the difference between the values that mktime() yields.
+ *
+ *  We've picked January 2 as the date to use, since
+ *  we're likely clear of any DST or other weirdness on these dates.
+ *
+ *  Throws bad_time() if cannot get the current time.
+ */
+
+time_t utctime::get_hour_diff() {
+    tm datum_day;
+    datum_day.tm_sec = 0;
+    datum_day.tm_min = 0;
+    datum_day.tm_hour = 12;
+    datum_day.tm_mday = 2;
+    datum_day.tm_mon = 0;
+    datum_day.tm_year = 30;
+    datum_day.tm_isdst = -1;
+
+    time_t datum_time = mktime(&datum_day);
+    if ( datum_time == -1 ) {
+        throw bad_time();
+    }
+
+    datum_day.tm_hour += 1;
+    time_t next_hour_time = mktime(&datum_day);
+    if ( next_hour_time == -1 ) {
+        throw bad_time();
+    }
+
+    return (next_hour_time - datum_time);
+}
+
+
+/*
+ *  Calculate a time_t value which represents a difference of
+ *  one second. The C standard does not define the units in which
+ *  a time_t value is measured. On most UNIX systems it's measured
+ *  in seconds, but we can't assume this, so we find out for
+ *  sure by setting up two struct tms a second apart and calculating
+ *  the difference between the values that mktime() yields.
+ *
+ *  We've picked January 2 as the dates to use, since
+ *  we're likely clear of any DST or other weirdness on these dates.
+ *
+ *  Throws bad_time() if cannot get the current time.
+ */
+
+time_t utctime::get_sec_diff() {
+    tm datum_day;
+    datum_day.tm_sec = 0;
+    datum_day.tm_min = 0;
+    datum_day.tm_hour = 12;
+    datum_day.tm_mday = 2;
+    datum_day.tm_mon = 0;
+    datum_day.tm_year = 30;
+    datum_day.tm_isdst = -1;
+
+    time_t datum_time = mktime(&datum_day);
+    if ( datum_time == -1 ) {
+        throw bad_time();
+    }
+
+    datum_day.tm_sec += 1;
+    time_t next_sec_time = mktime(&datum_day);
+    if ( next_sec_time == -1 ) {
+        throw bad_time();
+    }
+
+    return (next_sec_time - datum_time);
 }
 
 
@@ -619,10 +701,10 @@ tm* utctime::tm_decrement_second(tm * changing_tm, const int quantity) {
 
 
 /*
- *  Returns a time_t value which *might* represent the datetime
+ *  Returns a time_t value which represents the datetime
  *  contained within the supplied struct tm. 
  *
- *  The procedure is:
+ *  The basic procedure is:
  *
  *  1. Call mktime() on the supplied struct tm to get a time_t
  *     value for the *local* time using the struct tm supplied.
@@ -632,39 +714,22 @@ tm* utctime::tm_decrement_second(tm * changing_tm, const int quantity) {
  *     value.
  *  4. Subtract the second time_t value from the first time_t value
  *     to give a *possible* UTC offset.
- *  5. Add the offset to the first (local) time_t value and return
+ *  5. Add the offset to the first (local) time_t value to obtain
  *     a *possible* UTC time_t value.
  *
- *  The reason that the result only *may* be right is because the C
- *  standard gives us no way to get a time_t value for a specified
- *  UTC date time, so we have to calculate an offset *at the local
- *  time that matches it*, not at the actual UTC time we're interested
- *  in. While these two offsets will *usually* be the same, they
- *  won't be if DST begins or ends in between the two times.
+ *  This process will not work if we end up trying to call mktime()
+ *  with a time that does not exist locally, because DST has
+ *  disappeared it. If this happens, mktime() will normally change
+ *  the values to make a correct time (typically advancing it an
+ *  hour). Therefore, we compare the tm struct before and after
+ *  calling mktime(), and if they're different, we adjust the UTC
+ *  offset we calculated accordingly.
  *
- *  For instance, DST began in the Eastern United States on March 10,
- *  2013 at what would have been 2:00 local time if the clocks hadn't
- *  jumped straight from 01:59:59 to 03:00:00. Suppose we want to find
- *  the time_t for 06:00 UTC on March 10, 2013. At 06:00 UTC, local
- *  time was 01:00 EST, a five hour offset. At 10:00 UTC, for instance,
- *  local was was 06:00 EDT, only a four hour offset. To calculate the
- *  time_t for 06:00 UTC, this function would:
- *
- *  1. Calculate the time_t for 06:00 *local* time. 
- *  2. Call gmtime() on that time_t, and find that UTC was 10:00, a
- *     four hour offset.
- *  3. Apply that four hour offset in the opposite direction,
- *     and return a time_t corresponding to 06:00 less four hours,
- *     or 02:00 local.
- *
- *  This is not the correct answer, because the UTC offset at
- *  06:00 UTC was four hours, but the UTC offset at 06:00 *local*
- *  was *five* hours. This will only be an issue for somewhere
- *  between 2 and 24 hours each year, depending on location, but
- *  it's enough to be annoying. The caller of this function should
- *  check whether the timestamp actually agrees using the
- *  check_utc_timestamp() function, and take remedial action if
- *  necessary.
+ *  The caller should always check that the timestamp received
+ *  actually is correct, in case mktime() doesn't behave accordingly.
+ *  One way or another, this method should get close, and the caller
+ *  can adjust the returned timestamp by seeing if gmtime() returns
+ *  the expected UTC time.
  *
  *  Throws bad_time() if cannot get the current time.
  */
@@ -697,8 +762,7 @@ time_t utctime::get_fuzzy_utc_timestamp(const tm* const local_tm) {
     //  jumped from 01:59 straight to 03:00.
 
     bool bad_hour = false;
-    if ( orig_local.tm_hour != local_tm_copy.tm_hour ||
-         orig_local.tm_min != local_tm_copy.tm_min ) {
+    if ( tm_compare(orig_local, local_tm_copy) != 0 ) {
         bad_hour = true;
     }
 
@@ -724,14 +788,15 @@ time_t utctime::get_fuzzy_utc_timestamp(const tm* const local_tm) {
 
     time_t utc_offset = l_time - utc_wrong_way;
 
-    //  Remove an hour from the offset if we tried to
-    //  enter the witching hour.
+    //  Adjust the offset if we tried to enter the witching
+    //  hour.
 
     if ( bad_hour ) {
-        utc_offset -= get_day_diff() / 24;
+        int secs_diff = tm_adj_day_secs_diff(orig_local, local_tm_copy);
+        utc_offset -= get_sec_diff() * secs_diff;
     }
 
-    //  Fingers crossed!
+    //  This should be the correct UTC timestamp.
 
     return (l_time + utc_offset);
 }
@@ -763,87 +828,24 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
     //  See comments to get_fuzzy_utc_timestamp() for more information
     //  on when it might *not* be right.
 
-    time_t utc_maybe = get_fuzzy_utc_timestamp(&local_tm);
+    time_t utc_ts = get_fuzzy_utc_timestamp(&local_tm);
     int secs_diff = 0;
 
-    if ( !check_utc_timestamp(utc_maybe, secs_diff, year, month,
+    if ( !check_utc_timestamp(utc_ts, secs_diff, year, month,
                               day, hour, minute, second) ) {
 
-        //  It wasn't right, so check the immediately preceding
-        //  and following hours which should almost always work
+        //  It wasn't right, so adjust by the seconds difference.
+        //  We shouldn't ever get here, so for debugging purposes,
+        //  we assert false to make it really obvious if we ever do.
 
-        assert(secs_diff != 0);
+        assert(false);
 
-        bool error = true;
-
-        tm last_hour_tm = local_tm;
-        tm_decrement_hour(&last_hour_tm);
-
-        tm next_hour_tm = local_tm;
-        tm_increment_hour(&next_hour_tm);
-
-        //  And now loop through them, doing the same calculation
-        //  that we tried originally.
-
-        tm* hours[] = {&last_hour_tm, &next_hour_tm};
-        int unused_diff;
-        for ( int i = 0; i < 2 && error; ++i ) {
-            utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-            if ( check_utc_timestamp(utc_maybe, unused_diff, year, month,
-                                     day, hour, minute, second) ) {
-                error = false;
-            }
-        }
-
-        if ( error ) {
-
-            //  We still don't have a match. This could happen if
-            //  the DST offset is not a whole number of hours, or it
-            //  it's two hours, rather than one. This is pretty much
-            //  a doomsday scenario, and the user is going to pay for
-            //  living in such a weird place, but let's loop through
-            //  each minute over the last and next two hours to see if
-            //  we can find the answer, here. This is worst case
-            //  5 * 60 = 300 tests, so try not to live in a place like
-            //  this.
-
-            tm this_hour_tm = local_tm;
-
-            tm before_last_hour_tm = last_hour_tm;
-            tm_decrement_hour(&before_last_hour_tm);
-
-            tm after_next_hour_tm = next_hour_tm;
-            tm_increment_hour(&after_next_hour_tm);
-
-            tm* hours[] = {&before_last_hour_tm, &last_hour_tm,
-                           &this_hour_tm, &next_hour_tm, &after_next_hour_tm};
-            for ( int i = 0; i < 5 && error; ++i ) {
-                for ( int min = 0; min < 60 && error; ++min ) {
-                    hours[i]->tm_min = min;
-
-                    utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-                    if ( check_utc_timestamp(utc_maybe, unused_diff,
-                                             year, month, day,
-                                             hour, minute, second) ) {
-                        int curdiff = tm_adj_day_secs_diff(*(hours[i]),
-                                                           local_tm);
-                        assert(curdiff == secs_diff);
-                        error = false;
-                    }
-                }
-            }
-
-            if ( error ) {
-
-                //  Well, we tried. We can't find it, so throw an
-                //  exception. Maybe you were unlucky enough to
-                //  have local time increment by a leap second.
-
-                throw bad_time();
-            }
+        utc_ts -= get_sec_diff() * secs_diff;
+        if ( check_utc_timestamp(utc_ts, secs_diff, year, month,
+                                 day, hour, minute, second) == false ) {
+            throw bad_time();
         }
     }
 
-    time_t utc_definitely = utc_maybe;
-    return utc_definitely;
+    return utc_ts;
 }
