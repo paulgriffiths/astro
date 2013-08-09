@@ -823,29 +823,68 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
     local_tm.tm_mon = month - 1;        // Months start at 0 for tm
     local_tm.tm_year = year - 1900;     // Years since 1900 for tm
 
-    //  Using that struct we just created, get a UTC timestamp
-    //  for the corresponding UTC time which will *usually* be right.
-    //  See comments to get_fuzzy_utc_timestamp() for more information
-    //  on when it might *not* be right.
+    //  Get a timestamp close to (i.e. within 24 hours of) the
+    //  desired UTC time.
 
-    time_t utc_ts = get_fuzzy_utc_timestamp(&local_tm);
-    int secs_diff = 0;
+    time_t utc_ts = mktime(&local_tm);
+    if ( utc_ts == -1 ) {
+        throw bad_time();
+    }
 
-    if ( !check_utc_timestamp(utc_ts, secs_diff, year, month,
-                              day, hour, minute, second) ) {
+    //  Compute the difference with the desired UTC time...
 
-        //  It wasn't right, so adjust by the seconds difference.
-        //  We shouldn't ever get here, so for debugging purposes,
-        //  we assert false to make it really obvious if we ever do.
+    int secs_diff = get_utc_timestamp_sec_diff(utc_ts, year, month,
+                                               day, hour, minute, second);
 
-        assert(false);
+    //  ...and adjust the timestamp, if needed.
 
+    if ( secs_diff ) {
         utc_ts -= get_sec_diff() * secs_diff;
-        if ( check_utc_timestamp(utc_ts, secs_diff, year, month,
-                                 day, hour, minute, second) == false ) {
+        if ( get_utc_timestamp_sec_diff(utc_ts, year, month,
+                                        day, hour, minute, second) ) {
             throw bad_time();
         }
     }
 
     return utc_ts;
 }
+
+
+/*
+ *  Returns the difference, in seconds, between the UTC time
+ *  calculated by calling gmtime() with the provided timestamp,
+ *  and the UTC time desired, specified in the other arguments.
+ *
+ *  This function only works if the timestamp is less than 24
+ *  hours away from the desired time.
+ */
+
+int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
+                                        const int year, const int month,
+                                        const int day, const int hour,
+                                        const int minute, const int second) {
+
+    //  Get a struct tm representing UTC time for the provided
+    //  timestamp.
+
+    tm* ptm = gmtime(&check_time);
+    if ( ptm == 0 ) {
+        throw bad_time();
+    }
+    tm check_tm = *ptm;
+
+    //  Create a second struct tm representing the desired UTC time.
+
+    tm utc_tm;
+    utc_tm.tm_year = year - 1900;
+    utc_tm.tm_mon = month - 1;
+    utc_tm.tm_mday = day;
+    utc_tm.tm_hour = hour;
+    utc_tm.tm_min = minute;
+    utc_tm.tm_sec = second;
+
+    //  Compare the two and return the difference.
+
+    return tm_adj_day_secs_diff(utc_tm, check_tm);
+}
+

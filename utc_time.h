@@ -70,6 +70,7 @@ tm * tm_decrement_hour(tm * changing_tm, const int quantity = 1);
 tm * tm_decrement_minute(tm * changing_tm, const int quantity = 1);
 tm * tm_decrement_second(tm * changing_tm, const int quantity = 1);
 time_t get_fuzzy_utc_timestamp(const tm* const local_tm);
+time_t get_simple_utc_timestamp(const tm* const local_tm);
 bool check_utc_timestamp(const time_t check_time, int& secs_diff,
                          const int year, const int month,
                          const int day, const int hour,
@@ -77,6 +78,10 @@ bool check_utc_timestamp(const time_t check_time, int& secs_diff,
 time_t get_utc_timestamp(const int year, const int month,
                          const int day, const int hour,
                          const int minute, const int second);
+int get_utc_timestamp_sec_diff(const time_t check_time,
+                               const int year, const int month,
+                               const int day, const int hour,
+                               const int minute, const int second);
 
 
 /*
