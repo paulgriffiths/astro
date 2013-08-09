@@ -242,6 +242,19 @@ int utctime::tm_compare(const tm& first, const tm& second) {
 }
 
 
+/*
+ *  Returns the difference in seconds between two times which are
+ *  assumed to be within 24 hours of each other. 
+ *
+ *  If they are not within 24 hours of each other, the result is
+ *  returned as if they were. For instance, comparing 10am on one day
+ *  to 2pm on the next day will yield a difference of 4 hours, not
+ *  28 hours.
+ *
+ *  The value returned is positive if 'second' is later than 'first',
+ *  and negative if 'second' is earlier than 'first'.
+ */
+
 int utctime::tm_adj_day_secs_diff(const tm& first, const tm& second) {
     static const int secs_in_day = 86400;
     static const int secs_in_hour = 3600;
@@ -759,6 +772,8 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         //  It wasn't right, so check the immediately preceding
         //  and following hours which should almost always work
 
+        assert(secs_diff != 0);
+
         bool error = true;
 
         tm last_hour_tm = local_tm;
@@ -771,9 +786,10 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
         //  that we tried originally.
 
         tm* hours[] = {&last_hour_tm, &next_hour_tm};
+        int unused_diff;
         for ( int i = 0; i < 2 && error; ++i ) {
             utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-            if ( check_utc_timestamp(utc_maybe, secs_diff, year, month,
+            if ( check_utc_timestamp(utc_maybe, unused_diff, year, month,
                                      day, hour, minute, second) ) {
                 error = false;
             }
@@ -791,6 +807,8 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             //  5 * 60 = 300 tests, so try not to live in a place like
             //  this.
 
+            tm this_hour_tm = local_tm;
+
             tm before_last_hour_tm = last_hour_tm;
             tm_decrement_hour(&before_last_hour_tm);
 
@@ -798,14 +816,18 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
             tm_increment_hour(&after_next_hour_tm);
 
             tm* hours[] = {&before_last_hour_tm, &last_hour_tm,
-                           &local_tm, &next_hour_tm, &after_next_hour_tm};
+                           &this_hour_tm, &next_hour_tm, &after_next_hour_tm};
             for ( int i = 0; i < 5 && error; ++i ) {
                 for ( int min = 0; min < 60 && error; ++min ) {
                     hours[i]->tm_min = min;
 
                     utc_maybe = get_fuzzy_utc_timestamp(hours[i]);
-                    if ( check_utc_timestamp(utc_maybe, secs_diff, year, month,
-                                             day, hour, minute, second) ) {
+                    if ( check_utc_timestamp(utc_maybe, unused_diff,
+                                             year, month, day,
+                                             hour, minute, second) ) {
+                        int curdiff = tm_adj_day_secs_diff(*(hours[i]),
+                                                           local_tm);
+                        assert(curdiff == secs_diff);
                         error = false;
                     }
                 }
