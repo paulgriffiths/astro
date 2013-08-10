@@ -143,12 +143,10 @@ void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
 double astro::julian_date(const utctime::UTCTime& utc_time) {
     static const double epoch_j2000 = 2451545;
     static const double secs_in_a_day = 86400;
-    static const time_t ts_epoch_j2000 = utctime::get_utc_timestamp(2000,
-                                           1, 1, 12, 0, 0);
+    static const utctime::UTCTime utc_j2000(2000, 1, 1, 12, 0, 0);
         
-    const double seconds_since_j2000 = difftime(utc_time.timestamp(),
-                                                ts_epoch_j2000);
-    return epoch_j2000 + seconds_since_j2000 / secs_in_a_day;
+    const double days_since_j2000 = (utc_time - utc_j2000) / secs_in_a_day;
+    return epoch_j2000 + days_since_j2000;
 }
 
 
@@ -260,7 +258,7 @@ std::string astro::rasc_string(const double rasc) {
 
 
 /*
- *  Returns a string representation in the form "+212d 10m 30s" of
+ *  Returns a string representation in the form "+12d 10m 30s" of
  *  the degrees-minutes-seconds representation of the supplied
  *  declination.
  */
