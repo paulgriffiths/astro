@@ -55,7 +55,7 @@ class bad_time : public UTCTimeException {
 
 class invalid_date : public UTCTimeException {
     public:
-        explicit invalid_date(const std::string msg) :
+        explicit invalid_date(const std::string& msg) :
             UTCTimeException(msg) {};
 };
 
