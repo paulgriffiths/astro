@@ -106,6 +106,23 @@ UTCTime::UTCTime(const int year, const int month,
 
 
 /*
+ *  Returns a struct tm containing the date representation.
+ */
+
+std::tm UTCTime::get_tm() const {
+    tm ret_tm;
+    ret_tm.tm_year = m_year - 1900;
+    ret_tm.tm_mon = m_month - 1;
+    ret_tm.tm_mday = m_day;
+    ret_tm.tm_hour = m_hour;
+    ret_tm.tm_min = m_minute;
+    ret_tm.tm_sec = m_second;
+
+    return ret_tm;
+}
+
+
+/*
  *  Returns a string representation of the time
  *
  *  Throws bad_time() if cannot get the current time.

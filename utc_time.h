@@ -105,6 +105,7 @@ class UTCTime {
                 const int day, const int hour,
                 const int minute, const int second);
 
+        std::tm get_tm() const;
         std::string time_string() const;
         std::string time_string_inet() const;
         time_t timestamp() const;
