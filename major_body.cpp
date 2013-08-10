@@ -32,9 +32,8 @@ MajorBody::~MajorBody() {}
  *  Returns orbital elements for the specified time.
  *
  *  Arguments:
- *    calc_time - a pointer to a std::tm struct representing the
- *                UTC time for which to calculate, or 0 (NULL) for
- *                the current time.
+ *    calc_time - a UTCTime class containing the time for which to
+ *                calculate
  *    j2000_oes - an OrbElem struct representing the actual orbital
  *                elements at J2000
  *    century_oes - an OrbElem struct representing the changes in orbital

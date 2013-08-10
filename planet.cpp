@@ -35,7 +35,7 @@ Planet::~Planet() {}
 
 
 /*
- *  Returns a tm struct of the calculation time
+ *  Returns a UTCTime class containing the calculation time
  */
 
 const utctime::UTCTime& Planet::get_calc_time() const {
@@ -44,7 +44,7 @@ const utctime::UTCTime& Planet::get_calc_time() const {
 
 
 /*
- *  Returns the calculation time of the planet.
+ *  Returns a string representation of the calculation time of the planet.
  */
 
 std::string Planet::calc_time_string() const {
@@ -56,7 +56,7 @@ std::string Planet::calc_time_string() const {
  *  Return the orbital elements.
  */
 
-OrbElem Planet::get_orbital_elements() const {
+const OrbElem& Planet::get_orbital_elements() const {
     return m_oes;
 }
 

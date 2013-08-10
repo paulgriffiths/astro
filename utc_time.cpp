@@ -62,7 +62,10 @@ UTCTime::UTCTime() :
 
 
 /*
- *  Constructor initializing with a tm struct
+ *  Constructor initializing with a tm struct.
+ *
+ *  Throws bad_time_init() if cannot get the current time, or
+ *  invalid_date() if the data supplied is bad.
  */
 
 UTCTime::UTCTime(const std::tm& utc_tm) :
@@ -88,7 +91,8 @@ UTCTime::UTCTime(const std::tm& utc_tm) :
 /*
  *  Constructor for initializing to specified date & time.
  *
- *  Throws bad_time_init() if cannot get the current time.
+ *  Throws bad_time_init() if cannot get the current time, or
+ *  invalid_date() if the data supplied is bad.
  */
 
 UTCTime::UTCTime(const int year, const int month,

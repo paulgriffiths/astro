@@ -30,7 +30,7 @@ void astro::show_planet_positions(std::ostream& out) {
 
     //  Set up planets
 
-    utctime::UTCTime utc;
+    const utctime::UTCTime utc;
 
     const Sun sun(utc);
     const Mercury mercury(utc);

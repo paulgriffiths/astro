@@ -73,7 +73,6 @@ class Earth: public MajorBody {
                               0.32327364, 0.0, 0, 0)) {}
 
         virtual std::string name() const;
-
         virtual RectCoords geo_ecl_coords() const;
         virtual RectCoords geo_equ_coords() const;
 };

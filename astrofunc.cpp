@@ -133,11 +133,8 @@ void astro::get_zodiac_info(const double rasc, ZodiacInfo& zInfo) {
 /*
  *  Calculates the Julian Date for the supplied UTC time.
  *
- *  The supplied time is a standard tm struct representing
- *  a UTC time. The supplied time is modified by mktime(),
- *  but the modified information will not be reliable, since
- *  julian_date() interprets the tm struct as UTC time, and
- *  mktime() will interpret it as local time.
+ *  The supplied time is a UTCTime class representing the
+ *  UTC time corresponding to the desired Julian date.
  */
 
 double astro::julian_date(const utctime::UTCTime& utc_time) {

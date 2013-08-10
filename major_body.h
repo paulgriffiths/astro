@@ -24,8 +24,8 @@ namespace astro {
 class MajorBody : public Planet {
     public:
         explicit MajorBody(const utctime::UTCTime& ct,
-                           OrbElem j2000_oes,
-                           OrbElem century_oes) :
+                           const OrbElem& j2000_oes,
+                           const OrbElem& century_oes) :
             Planet(ct, calc_orbital_elements(ct, j2000_oes, century_oes)) {}
         virtual ~MajorBody() = 0;
 

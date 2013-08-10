@@ -1,10 +1,10 @@
 /*
- *  base_planet.cpp
- *  ===============
+ *  moon.cpp
+ *  ========
  *  Copyright 2013 Paul Griffiths
  *  Email: mail@paulgriffiths.net
  *
- *  Implementation of abstract base Planet class.
+ *  Implementation of Moon classes.
  *
  *  Distributed under the terms of the GNU General Public License.
  *  http://www.gnu.org/licenses/

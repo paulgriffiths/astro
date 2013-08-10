@@ -4,7 +4,7 @@
  *  Copyright 2013 Paul Griffiths
  *  Email: mail@paulgriffiths.net
  *
- *  Interface to Moon class.
+ *  Interface to Moon classes.
  *
  *  Distributed under the terms of the GNU General Public License.
  *  http://www.gnu.org/licenses/
@@ -25,8 +25,8 @@ namespace astro {
 class MoonBase : public Planet {
     public:
         explicit MoonBase(const utctime::UTCTime& ct,
-                          OrbElem y2000_oes,
-                          OrbElem day_oes) :
+                          const OrbElem& y2000_oes,
+                          const OrbElem& day_oes) :
             Planet(ct, calc_orbital_elements(ct, y2000_oes, day_oes)) {}
         virtual ~MoonBase() = 0;
 
@@ -40,7 +40,7 @@ class MoonBase : public Planet {
 
 class Moon : public MoonBase {
     public:
-        explicit Moon(const utctime::UTCTime ct) :
+        explicit Moon(const utctime::UTCTime& ct) :
             MoonBase(ct,
                      OrbElem(60.2666, 0.0549,
                              5.1454, 198.5516,
@@ -54,7 +54,7 @@ class Moon : public MoonBase {
 
 class SunForMoon : public MoonBase {
     public:
-        explicit SunForMoon(const utctime::UTCTime ct) :
+        explicit SunForMoon(const utctime::UTCTime& ct) :
             MoonBase(ct,
                      OrbElem(1, 0.016709,
                              0, 278.9874,
