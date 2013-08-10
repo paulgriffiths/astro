@@ -17,6 +17,7 @@
 #include "astrofunc.h"
 #include "planet.h"
 #include "moon.h"
+#include "utc_time.h"
 
 using std::cos;
 using std::sin;
@@ -41,12 +42,9 @@ MoonBase::~MoonBase() {}
 OrbElem MoonBase::calc_orbital_elements(const utctime::UTCTime& calc_time,
                                         const OrbElem& y2000_oes,
                                         const OrbElem& day_oes) const {
-    static const time_t ts_epoch_y2000 = utctime::get_utc_timestamp(1999,
-                                           12, 31, 0, 0, 0);
-    double seconds_since_y2000 = difftime(calc_time.timestamp(),
-                                          ts_epoch_y2000);
+    static const utctime::UTCTime utc_y2000(1999, 12, 31, 0, 0, 0);
     static const double secs_in_a_day = 86400;
-    const double days = seconds_since_y2000 / secs_in_a_day;
+    const double days = (calc_time - utc_y2000) / secs_in_a_day;
 
     OrbElem oes;
 
