@@ -17,6 +17,13 @@
 #include "utc_time.h"
 
 using namespace utctime;
+using std::time;
+using std::difftime;
+using std::mktime;
+using std::gmtime;
+using std::localtime;
+using std::strftime;
+
 
 /********************************************************************
  *
@@ -916,4 +923,104 @@ int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
     //  Compare the two and return the difference.
 
     return tm_intraday_secs_diff(utc_tm, check_tm);
+}
+
+
+/*
+ *  Less than operator.
+ */
+
+bool UTCTime::operator<(const UTCTime& rhs) const {
+    bool less_than = false;
+    if ( m_year != rhs.m_year ) {
+        less_than = m_year < rhs.m_year;
+    } else if ( m_month != rhs.m_month ) {
+        less_than = m_month < rhs.m_month;
+    } else if ( m_day != rhs.m_day ) {
+        less_than = m_day < rhs.m_day;
+    } else if ( m_hour != rhs.m_hour ) {
+        less_than = m_hour < rhs.m_hour;
+    } else if ( m_minute != rhs.m_minute ) {
+        less_than = m_minute < rhs.m_minute;
+    } else if ( m_second != rhs.m_second ) {
+        less_than = m_second < rhs.m_second;
+    }
+    return less_than;
+}
+
+
+/*
+ *  Greater than or equal to operator
+ */
+
+bool UTCTime::operator>=(const UTCTime& rhs) const {
+    return ((*this < rhs) == false);
+}
+
+
+/*
+ *  Greater than operator.
+ */
+
+bool UTCTime::operator>(const UTCTime& rhs) const {
+    bool greater_than = false;
+    if ( m_year != rhs.m_year ) {
+        greater_than = m_year > rhs.m_year;
+    } else if ( m_month != rhs.m_month ) {
+        greater_than = m_month > rhs.m_month;
+    } else if ( m_day != rhs.m_day ) {
+        greater_than = m_day > rhs.m_day;
+    } else if ( m_hour != rhs.m_hour ) {
+        greater_than = m_hour > rhs.m_hour;
+    } else if ( m_minute != rhs.m_minute ) {
+        greater_than = m_minute > rhs.m_minute;
+    } else if ( m_second != rhs.m_second ) {
+        greater_than = m_second > rhs.m_second;
+    }
+    return greater_than;
+}
+
+
+/*
+ *  Less than or equal to operator
+ */
+
+bool UTCTime::operator<=(const UTCTime& rhs) const {
+    return ((*this > rhs) == false);
+}
+
+
+/*
+ *  Equality operator.
+ */
+
+bool UTCTime::operator==(const UTCTime& rhs) const {
+    bool equal = false;
+    if ( m_year == rhs.m_year &&
+         m_month == rhs.m_month &&
+         m_day == rhs.m_day &&
+         m_hour == rhs.m_hour &&
+         m_minute == rhs.m_minute &&
+         m_second == rhs.m_second ) {
+        equal = true;
+    }
+    return equal;
+}
+
+
+/*
+ *  Inequality operator
+ */
+
+bool UTCTime::operator!=(const UTCTime& rhs) const {
+    return ((rhs == *this) == false);
+}
+
+
+/*
+ *  Subtraction operator, returns difference in seconds.
+ */
+
+double UTCTime::operator-(const UTCTime& rhs) const {
+    return std::difftime(m_timestamp, rhs.m_timestamp);
 }

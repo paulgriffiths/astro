@@ -111,6 +111,15 @@ class UTCTime {
         std::string time_string_inet() const;
         time_t timestamp() const;
 
+        bool operator<(const UTCTime& rhs) const;
+        bool operator>=(const UTCTime& rhs) const;
+        bool operator>(const UTCTime& rhs) const;
+        bool operator<=(const UTCTime& rhs) const;
+        bool operator==(const UTCTime& rhs) const;
+        bool operator!=(const UTCTime& rhs) const;
+
+        double operator-(const UTCTime& rhs) const;
+
     private:
         int m_year;
         int m_month;
