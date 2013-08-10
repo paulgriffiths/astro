@@ -15,6 +15,7 @@
 #define PG_UTC_TIME_H
 
 #include <string>
+#include <ctime>
 
 namespace utctime {
 
@@ -69,17 +70,17 @@ bool validate_date(const int year, const int month,
 time_t get_day_diff();
 time_t get_hour_diff();
 time_t get_sec_diff();
-int tm_compare(const tm& first, const tm& second);
+int tm_compare(const std::tm& first, const tm& second);
 int tm_intraday_secs_diff(const tm& first, const tm& second);
 bool is_leap_year(const int year);
-tm * tm_increment_day(tm * changing_tm, const int quantity = 1);
-tm * tm_increment_hour(tm * changing_tm, const int quantity = 1);
-tm * tm_increment_minute(tm * changing_tm, const int quantity = 1);
-tm * tm_increment_second(tm * changing_tm, const int quantity = 1);
-tm * tm_decrement_day(tm * changing_tm, const int quantity = 1);
-tm * tm_decrement_hour(tm * changing_tm, const int quantity = 1);
-tm * tm_decrement_minute(tm * changing_tm, const int quantity = 1);
-tm * tm_decrement_second(tm * changing_tm, const int quantity = 1);
+std::tm* tm_increment_day(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_increment_hour(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_increment_minute(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_increment_second(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_decrement_day(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_decrement_hour(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_decrement_minute(std::tm* changing_tm, const int quantity = 1);
+std::tm* tm_decrement_second(std::tm* changing_tm, const int quantity = 1);
 bool check_utc_timestamp(const time_t check_time, int& secs_diff,
                          const int year, const int month,
                          const int day, const int hour,
@@ -99,11 +100,11 @@ int get_utc_timestamp_sec_diff(const time_t check_time,
 
 class UTCTime {
     public:
-        UTCTime();
-        UTCTime(const tm& utc_tm);
-        UTCTime(const int year, const int month,
-                const int day, const int hour,
-                const int minute, const int second);
+        explicit UTCTime();
+        explicit UTCTime(const std::tm& utc_tm);
+        explicit UTCTime(const int year, const int month,
+                         const int day, const int hour,
+                         const int minute, const int second);
 
         std::tm get_tm() const;
         std::string time_string() const;

@@ -40,7 +40,7 @@ UTCTime::UTCTime() :
         throw bad_time_init();
     }
 
-    tm* ptm = gmtime(&m_timestamp);
+    std::tm* ptm = gmtime(&m_timestamp);
     if ( ptm == 0 ) {
         throw bad_time_init();
     }
@@ -58,7 +58,7 @@ UTCTime::UTCTime() :
  *  Constructor initializing with a tm struct
  */
 
-UTCTime::UTCTime(const tm& utc_tm) :
+UTCTime::UTCTime(const std::tm& utc_tm) :
         m_year(utc_tm.tm_year + 1900), m_month(utc_tm.tm_mon + 1),
         m_day(utc_tm.tm_mday), m_hour(utc_tm.tm_hour),
         m_minute(utc_tm.tm_min), m_second(utc_tm.tm_sec),
@@ -110,7 +110,7 @@ UTCTime::UTCTime(const int year, const int month,
  */
 
 std::tm UTCTime::get_tm() const {
-    tm ret_tm;
+    std::tm ret_tm;
     ret_tm.tm_year = m_year - 1900;
     ret_tm.tm_mon = m_month - 1;
     ret_tm.tm_mday = m_day;
@@ -129,7 +129,7 @@ std::tm UTCTime::get_tm() const {
  */
 
 std::string UTCTime::time_string() const {
-    tm* utc_tm = gmtime(&m_timestamp);
+    std::tm* utc_tm = gmtime(&m_timestamp);
     if ( utc_tm == 0 ) {
         throw bad_time();
     }
@@ -147,7 +147,7 @@ std::string UTCTime::time_string() const {
  */
 
 std::string UTCTime::time_string_inet() const {
-    tm* utc_tm = gmtime(&m_timestamp);
+    std::tm* utc_tm = gmtime(&m_timestamp);
     if ( utc_tm == 0 ) {
         throw bad_time();
     }
@@ -240,12 +240,12 @@ bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
                                   const int year, const int month,
                                   const int day, const int hour,
                                   const int minute, const int second) {
-    tm* ptm = gmtime(&check_time);
+    std::tm* ptm = gmtime(&check_time);
     if ( ptm == 0 ) {
         throw bad_time();
     }
 
-    tm check_tm = *ptm;
+    std::tm check_tm = *ptm;
     bool agrees = false;
     if ( check_tm.tm_year + 1900 == year &&
          check_tm.tm_mon + 1 == month &&
@@ -257,7 +257,7 @@ bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
     }
 
     if ( agrees == false ) {
-        tm utc_tm;
+        std::tm utc_tm;
         utc_tm.tm_year = year - 1900;
         utc_tm.tm_mon = month - 1;
         utc_tm.tm_mday = day;
@@ -291,7 +291,7 @@ bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
  */
 
 time_t utctime::get_day_diff() {
-    tm datum_day;
+    std::tm datum_day;
     datum_day.tm_sec = 0;
     datum_day.tm_min = 0;
     datum_day.tm_hour = 12;
@@ -332,7 +332,7 @@ time_t utctime::get_day_diff() {
  */
 
 time_t utctime::get_hour_diff() {
-    tm datum_day;
+    std::tm datum_day;
     datum_day.tm_sec = 0;
     datum_day.tm_min = 0;
     datum_day.tm_hour = 12;
@@ -373,7 +373,7 @@ time_t utctime::get_hour_diff() {
  */
 
 time_t utctime::get_sec_diff() {
-    tm datum_day;
+    std::tm datum_day;
     datum_day.tm_sec = 0;
     datum_day.tm_min = 0;
     datum_day.tm_hour = 12;
@@ -406,7 +406,7 @@ time_t utctime::get_sec_diff() {
  *  and second. Any timezone or DST information is ignored.
  */
 
-int utctime::tm_compare(const tm& first, const tm& second) {
+int utctime::tm_compare(const std::tm& first, const std::tm& second) {
     int compare_result;
 
     if ( first.tm_year != second.tm_year ) {
@@ -442,7 +442,8 @@ int utctime::tm_compare(const tm& first, const tm& second) {
  *  and negative if 'second' is earlier than 'first'.
  */
 
-int utctime::tm_intraday_secs_diff(const tm& first, const tm& second) {
+int utctime::tm_intraday_secs_diff(const std::tm& first,
+                                   const std::tm& second) {
     static const int secs_in_day = 86400;
     static const int secs_in_hour = 3600;
     static const int secs_in_min = 60;
@@ -489,7 +490,7 @@ bool utctime::is_leap_year(const int year) {
  *  Adds a day to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_increment_day(std::tm* changing_tm, const int quantity) {
     enum months {january, february, march, april, may, june, july,
                  august, september, october, november, december};
 
@@ -561,7 +562,7 @@ tm* utctime::tm_increment_day(tm * changing_tm, const int quantity) {
  *  Adds an hour to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_hour(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_increment_hour(std::tm* changing_tm, const int quantity) {
     static const int hours_in_day = 24;
 
     if ( quantity < 0 ) {
@@ -592,7 +593,8 @@ tm* utctime::tm_increment_hour(tm * changing_tm, const int quantity) {
  *  Adds a minute to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_minute(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_increment_minute(std::tm* changing_tm,
+                                      const int quantity) {
     static const int mins_in_hour = 60;
 
     if ( quantity < 0 ) {
@@ -622,7 +624,8 @@ tm* utctime::tm_increment_minute(tm * changing_tm, const int quantity) {
  *  Adds a second to a supplied tm struct.
  */
 
-tm* utctime::tm_increment_second(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_increment_second(std::tm* changing_tm,
+                                      const int quantity) {
     static const int secs_in_min = 60;
 
     if ( quantity < 0 ) {
@@ -653,7 +656,7 @@ tm* utctime::tm_increment_second(tm * changing_tm, const int quantity) {
  *  Deducts a day from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_decrement_day(std::tm* changing_tm, const int quantity) {
     enum months {january, february, march, april, may, june, july,
                  august, september, october, november, december};
 
@@ -720,7 +723,7 @@ tm* utctime::tm_decrement_day(tm * changing_tm, const int quantity) {
  *  Deducts an hour from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_hour(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_decrement_hour(std::tm* changing_tm, const int quantity) {
     static const int hours_in_day = 24;
 
     if ( quantity < 0 ) {
@@ -750,7 +753,8 @@ tm* utctime::tm_decrement_hour(tm * changing_tm, const int quantity) {
  *  Deducts a minute from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_minute(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_decrement_minute(std::tm* changing_tm,
+                                      const int quantity) {
     static const int mins_in_hour = 60;
 
     if ( quantity < 0 ) {
@@ -779,7 +783,8 @@ tm* utctime::tm_decrement_minute(tm * changing_tm, const int quantity) {
  *  Deducts a second from a supplied tm struct.
  */
 
-tm* utctime::tm_decrement_second(tm * changing_tm, const int quantity) {
+std::tm* utctime::tm_decrement_second(std::tm* changing_tm,
+                                      const int quantity) {
     static const int secs_in_min = 60;
 
     if ( quantity < 0 ) {
@@ -818,7 +823,7 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 
     //  Create a struct tm containing the desired UTC time.
 
-    tm local_tm;
+    std::tm local_tm;
     local_tm.tm_sec = second;
     local_tm.tm_min = minute;
     local_tm.tm_hour = hour;
@@ -892,15 +897,15 @@ int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
     //  Get a struct tm representing UTC time for the provided
     //  timestamp.
 
-    tm* ptm = gmtime(&check_time);
+    std::tm* ptm = gmtime(&check_time);
     if ( ptm == 0 ) {
         throw bad_time();
     }
-    tm check_tm = *ptm;
+    std::tm check_tm = *ptm;
 
     //  Create a second struct tm representing the desired UTC time.
 
-    tm utc_tm;
+    std::tm utc_tm;
     utc_tm.tm_year = year - 1900;
     utc_tm.tm_mon = month - 1;
     utc_tm.tm_mday = day;
@@ -912,4 +917,3 @@ int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
 
     return tm_intraday_secs_diff(utc_tm, check_tm);
 }
-
