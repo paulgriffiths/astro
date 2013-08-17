@@ -37,11 +37,27 @@ Up-to-date documentation can be found at
 
 Installation
 ------------
-**astro** is written in C++.
+**astro** is written in C++. It requires the **utctime** library, which
+can be found at <https://github.com/paulgriffiths/utctime>.
 
-Download the source code and run `make` from the main directory to build
+Download the source code and edit the file `Makefile` to modify the
+following variables:
+* LIB_INSTALL_PATH
+* INC_INSTALL_PATH
+
+with the directories to which to install the library and the header files,
+and the variables:
+* UTC_INC_PATH
+* UTC_LIB_PATH
+
+with the directories in which the UTCTime library and headers are installed.
+
+From the command line, run `make` and then `make install` to deploy the
+library and header files. Run `make sample` to build an example program
+with the installed library. `#include <paulgrif/astro.h>` to use the
+library.
+
 a sample program. Include the files in your project to access the functionality. 
-
 Licensing
 ---------
 Please see the file called LICENSE.
