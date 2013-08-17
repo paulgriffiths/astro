@@ -13,11 +13,11 @@
 
 #include <string>
 #include <cmath>
+#include <paulgrif/utctime.h>
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "major_body.h"
 #include "planets.h"
-#include "utc_time.h"
 
 using std::cos;
 using std::sin;

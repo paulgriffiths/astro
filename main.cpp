@@ -13,7 +13,8 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
-#include "astro.h"
+#include <paulgrif/utctime.h>
+#include <paulgrif/astro.h>
 
 void show_times();
 

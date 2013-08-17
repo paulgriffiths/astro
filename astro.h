@@ -45,7 +45,6 @@
 #ifndef PG_ASTRO_H
 #define PG_ASTRO_H
 
-#include "utc_time.h"
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "planet.h"

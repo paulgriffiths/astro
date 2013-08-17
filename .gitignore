@@ -4,6 +4,7 @@
 *.o
 astro
 unittests
+sample
 
 # Compiled Dynamic libraries
 *.so

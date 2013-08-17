@@ -13,11 +13,11 @@
 
 #include <iostream>
 #include <iomanip>
+#include <paulgrif/utctime.h>
 #include "astrofunc.h" 
 #include "planets.h"
 #include "moon.h"
 #include "planet_func.h"
-#include "utc_time.h"
 
 using namespace astro;
 

@@ -15,9 +15,9 @@
 #define PG_ASTRO_PLANETS_H
 
 #include <string>
+#include <paulgrif/utctime.h>
 #include "astro_common_types.h"
 #include "major_body.h"
-#include "utc_time.h"
 
 namespace astro {
 

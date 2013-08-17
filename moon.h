@@ -15,10 +15,10 @@
 #define PG_ASTRO_MOON_H
 
 #include <string>
+#include <paulgrif/utctime.h>
 #include "astro_common_types.h"
 #include "astrofunc.h"
 #include "planet.h"
-#include "utc_time.h"
 
 namespace astro {
 

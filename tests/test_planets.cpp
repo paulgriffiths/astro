@@ -20,8 +20,8 @@
 
 
 #include <CppUTest/CommandLineTestRunner.h>
+#include <paulgrif/utctime.h>
 #include "../astro.h"
-#include "../utc_time.h"
 
 using namespace astro;
 

@@ -16,8 +16,8 @@
 
 #include <string>
 #include <cmath>
+#include <paulgrif/utctime.h>
 #include "astro_common_types.h"
-#include "utc_time.h"
 
 
 namespace astro {

@@ -21,8 +21,8 @@
 
 #include <CppUTest/CommandLineTestRunner.h>
 #include <ctime>
+#include <paulgrif/utctime.h>
 #include "../astrofunc.h"
-#include "../utc_time.h"
 
 using namespace astro;
 

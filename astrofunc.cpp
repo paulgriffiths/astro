@@ -16,9 +16,9 @@
 #include <string>
 #include <cmath>
 #include <cassert>
+#include <paulgrif/utctime.h>
 #include "astro_common_types.h"
 #include "astrofunc.h"
-#include "utc_time.h"
 
 using std::cos;
 using std::sin;
