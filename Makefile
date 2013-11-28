@@ -16,8 +16,8 @@ TESTOUT=unittests
 SAMPLEOUT=sample
 
 # Install paths
-LIB_INSTALL_PATH=/home/paul/lib/cpp
-INC_INSTALL_PATH=/home/paul/include
+LIB_INSTALL_PATH=~/lib/cpp
+INC_INSTALL_PATH=~/include
 HEADERS=astro.h astro_common_types.h astrofunc.h major_body.h
 HEADERS+=moon.h planet_func.h planet.h planets.h
 

@@ -15,5 +15,6 @@ sample
 *.la
 *.a
 
-# Vim swap files
+# Vim swap and backup files
 *.swp
+*~
